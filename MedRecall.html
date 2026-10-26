@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b2545">
+<title>MedRecall – Medicine &amp; MR Manager</title>
+<style>
+:root{--navy:#0b2545;--navy2:#13315c;--blue:#1d4e89;--accent:#2a6fdb;--bg:#f3f6fb;--card:#fff;--line:#d9e2ef;--text:#14213d;--muted:#5b6b82;--ok:#1f7a4d;--okbg:#e3f4ea;--warn:#8a5200;--warnbg:#fff3d6;--bad:#b42318;--badbg:#fde8e7;--demo:#4b2fa3;--demobg:#ece6ff;--r:10px}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",Arial,sans-serif;background:var(--bg);color:var(--text)}
+a{color:var(--blue)}
+h1{font-size:22px;margin:0 0 12px}
+h2{font-size:18px;margin:0 0 10px}
+h3{font-size:16px;margin:14px 0 8px}
+.muted{color:var(--muted)}
+small{font-size:13px}
+header.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--navy);color:#fff;height:58px}
+.brand{color:#fff;font-weight:700;font-size:19px;text-decoration:none;white-space:nowrap}
+.brand span{font-weight:400;opacity:.75;font-size:14px}
+.gsearch{flex:1;min-width:0;max-width:640px}
+.gsearch input{width:100%;padding:10px 12px;border-radius:8px;border:0;font-size:16px;background:#fff;color:var(--text)}
+.icon-btn{background:transparent;border:0;color:inherit;font-size:22px;min-width:44px;min-height:44px;cursor:pointer;border-radius:8px}
+.layout{display:flex;min-height:calc(100vh - 58px)}
+nav#nav{width:236px;flex-shrink:0;background:#fff;border-right:1px solid var(--line);padding:10px 8px;position:sticky;top:58px;height:calc(100vh - 58px);overflow:auto}
+nav#nav a{display:flex;gap:10px;align-items:center;padding:11px 12px;border-radius:8px;color:var(--text);text-decoration:none;font-weight:500;margin-bottom:2px}
+nav#nav a:hover{background:#eef3fa}
+nav#nav a.on{background:var(--navy);color:#fff}
+nav#nav .ni{width:22px;text-align:center}
+nav#nav .navfoot{margin-top:14px;padding:10px 12px;font-size:13px;color:var(--muted);border-top:1px solid var(--line)}
+#navShade{display:none}
+main{flex:1;min-width:0;padding:18px;max-width:1240px}
+@media(max-width:899px){
+ nav#nav{position:fixed;left:0;top:58px;bottom:0;height:auto;z-index:40;transform:translateX(-105%);transition:transform .2s;box-shadow:4px 0 20px rgba(0,0,0,.2)}
+ body.navopen nav#nav{transform:none}
+ body.navopen #navShade{display:block;position:fixed;inset:58px 0 0 0;background:rgba(0,0,0,.35);z-index:35}
+ main{padding:12px}
+ .brand span{display:none}
+}
+@media(min-width:900px){#menuBtn{display:none}}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:9px 16px;border-radius:8px;border:1px solid var(--navy);background:var(--navy);color:#fff;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;font-family:inherit;line-height:1.2}
+.btn:hover{background:var(--navy2)}
+.btn.sec{background:#fff;color:var(--navy)}
+.btn.sec:hover{background:#eef3fa}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--navy)}
+.btn.sm{min-height:36px;padding:6px 11px;font-size:14px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row.between{justify-content:space-between}
+.sp{flex:1}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.card>h2:first-child,.card>h3:first-child{margin-top:0}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+.grid2{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.stats{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));margin-bottom:12px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px;text-decoration:none;color:var(--text)}
+.stat b{display:block;font-size:26px;color:var(--navy)}
+.stat span{font-size:13px;color:var(--muted)}
+.quick{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:12px}
+.quick .btn{min-height:56px;font-size:16px}
+.item{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px;cursor:pointer;position:relative}
+.item:hover{border-color:var(--accent)}
+.item .t{font-weight:700;font-size:17px;color:var(--navy)}
+.item .comp{margin:3px 0;font-weight:500}
+.item .meta{font-size:14px;color:var(--muted)}
+.list{display:grid;gap:8px}
+.li{padding:10px 0;border-bottom:1px solid var(--line)}
+.li:last-child{border-bottom:0}
+.li.click{cursor:pointer}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;font-weight:600;vertical-align:middle;white-space:nowrap}
+.b-unv{background:var(--warnbg);color:var(--warn)}
+.b-ver{background:var(--okbg);color:var(--ok)}
+.b-demo{background:var(--demobg);color:var(--demo)}
+.b-bad{background:var(--badbg);color:var(--bad)}
+.b-info{background:#e5eefb;color:var(--blue)}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:999px;background:#e9eff8;color:var(--navy);font-size:14px;margin:3px 4px 3px 0;cursor:pointer;border:0;font-family:inherit}
+.chip:hover{background:#d9e5f5}
+.chip b{font-weight:700}
+.alert{padding:10px 12px;border-radius:8px;margin-bottom:12px;font-size:14px}
+.alert.warn{background:var(--warnbg);color:#5c3700;border:1px solid #f0d08a}
+.alert.bad{background:var(--badbg);color:#7a1610;border:1px solid #f3b8b3}
+.alert.info{background:#e8f0fc;color:#0e2d5a;border:1px solid #bcd0f0}
+.alert.ok{background:var(--okbg);color:#11482d;border:1px solid #a9dbbf}
+.star{background:none;border:0;font-size:22px;cursor:pointer;color:#c3ccd9;min-width:36px;min-height:36px;padding:0}
+.star.on{color:#e0a100}
+.item .star{position:absolute;right:6px;top:6px}
+.item .selbox{position:absolute;right:44px;top:12px;display:flex;align-items:center;gap:4px;font-size:13px;color:var(--muted)}
+.item .selbox input{width:20px;height:20px}
+.fgrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(230px,1fr))}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted);font-weight:600}
+.fld.full{grid-column:1/-1}
+.fld.chk{flex-direction:row;align-items:center;gap:8px;color:var(--text)}
+.fld.chk input{width:22px;height:22px}
+input,select,textarea{font:inherit;font-size:16px;padding:9px 10px;border:1px solid #b5c2d6;border-radius:8px;background:#fff;color:var(--text);width:100%;min-height:44px}
+textarea{min-height:64px;resize:vertical}
+input[type=checkbox],input[type=radio]{width:auto;min-height:0}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:0;border-color:var(--accent)}
+.filters{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));margin-bottom:10px}
+.ingrow,.samprow{display:grid;grid-template-columns:2fr 1fr 44px;gap:6px;margin-bottom:6px}
+.samprow{grid-template-columns:2fr 80px 1fr 44px}
+@media(max-width:520px){.samprow{grid-template-columns:1fr 70px 44px}.samprow .exp{grid-column:1/3}}
+.formfoot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;position:sticky;bottom:0;background:#fff;padding:10px 0 4px;border-top:1px solid var(--line)}
+.msel{border:1px solid #b5c2d6;border-radius:8px;padding:6px}
+.msel .msf{min-height:38px;padding:6px 8px;margin-bottom:6px}
+.mslist{max-height:200px;overflow:auto}
+.msi{display:flex;gap:8px;align-items:flex-start;padding:6px 4px;color:var(--text);font-weight:500;cursor:pointer;border-radius:6px}
+.msi:hover{background:#f1f5fb}
+.msi input{width:20px;height:20px;margin-top:2px;flex-shrink:0}
+.msi small{display:block;color:var(--muted);font-weight:400}
+.modal{position:fixed;inset:0;background:rgba(5,15,35,.55);z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:24px 10px}
+.modal.hidden{display:none}
+.modal-box{background:#fff;border-radius:12px;width:100%;max-width:780px;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.modal-box.wide{max-width:1100px}
+.modal-head{display:flex;align-items:center;gap:8px;padding:10px 10px 10px 16px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--navy);color:#fff;border-radius:12px 12px 0 0;z-index:2}
+.modal-head h2{flex:1;margin:0;font-size:18px}
+.modal-body{padding:16px}
+body.modal-open{overflow:hidden}
+@media(max-width:600px){.modal{padding:0}.modal-box{border-radius:0;min-height:100%}.modal-head{border-radius:0}}
+.tblwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table.tbl{width:100%;border-collapse:collapse;font-size:14px;background:#fff}
+.tbl th,.tbl td{padding:8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.tbl th{background:#eef3fa;color:var(--navy);font-weight:700}
+.tbl td.n,.tbl th.n{text-align:right;white-space:nowrap}
+.tbl tr.same td{background:var(--okbg)}
+.tbl tr.diff td{background:var(--warnbg)}
+.kv{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:6px 12px;font-size:15px}
+.kv dt{color:var(--muted);font-weight:600}
+.kv dd{margin:0;white-space:pre-wrap;word-break:break-word}
+.tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.tabs .btn{min-height:40px}
+.hidecomp .comp,.hidecomp .compv{filter:blur(7px);user-select:none;cursor:pointer}
+.hidecomp .revealed{filter:none!important}
+.qcard{background:#fff;border:2px solid var(--navy);border-radius:14px;padding:22px;text-align:center;margin-bottom:12px}
+.qprompt{font-size:24px;font-weight:700;color:var(--navy);margin:8px 0 6px;word-break:break-word}
+.qsub{color:var(--muted)}
+.qans{margin-top:16px;padding:14px;background:#f1f6fd;border-radius:10px;font-size:18px;text-align:left}
+.qopts{display:grid;gap:8px;margin-top:16px}
+.qopt{text-align:left;padding:14px;border:1px solid #b5c2d6;border-radius:10px;background:#fff;font:inherit;font-size:16px;cursor:pointer;min-height:52px}
+.qopt:hover{border-color:var(--accent)}
+.qopt.right{background:var(--okbg);border-color:var(--ok)}
+.qopt.wrong{background:var(--badbg);border-color:var(--bad)}
+.progress{height:8px;background:#e1e8f2;border-radius:99px;overflow:hidden;margin:6px 0 12px}
+.progress i{display:block;height:100%;background:var(--accent)}
+.timeline .li.latest{background:#f1f6fd;border-left:4px solid var(--accent);padding-left:10px;border-radius:4px}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:70;display:flex;flex-direction:column;gap:6px;align-items:center;pointer-events:none;width:calc(100% - 24px);max-width:520px}
+#toast div{background:#14213d;color:#fff;padding:11px 16px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.25);font-size:15px;pointer-events:auto}
+#toast div.err{background:var(--bad)}
+.empty{padding:20px;text-align:center;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:var(--r)}
+.dl{display:flex;flex-wrap:wrap}
+.hint{font-size:13px;color:var(--muted);font-weight:400}
+.hl{background:#fff2a8;border-radius:2px}
+#printArea{display:none}
+@media print{
+ body.printing>*:not(#printArea){display:none!important}
+ body.printing #printArea{display:block}
+ body:not(.printing) header.top,body:not(.printing) nav#nav,body:not(.printing) .noprint{display:none!important}
+ #printArea{font-size:12px;color:#000}
+ #printArea table{width:100%;border-collapse:collapse}
+ #printArea th,#printArea td{border:1px solid #888;padding:4px 6px;text-align:left;vertical-align:top}
+ #printArea th{background:#e6e6e6}
+ #printArea tr{page-break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header class="top">
+  <button id="menuBtn" class="icon-btn" aria-label="Open menu" data-act="toggleNav">☰</button>
+  <a href="#/dashboard" class="brand">MedRecall <span>Medicine &amp; MR Manager</span></a>
+  <div class="gsearch"><input id="gq" type="search" placeholder="Search brand, salt, company, MR… e.g. amlo 5" autocomplete="off" aria-label="Global search"></div>
+</header>
+<div id="navShade" data-act="toggleNav"></div>
+<div class="layout">
+  <nav id="nav" aria-label="Main"></nav>
+  <main id="main"></main>
+</div>
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-box" id="modalBox">
+    <div class="modal-head"><h2 id="modalTitle"></h2><button class="icon-btn" data-act="closeModal" aria-label="Close">✕</button></div>
+    <div id="modalBody" class="modal-body"></div>
+  </div>
+</div>
+<div id="toast"></div>
+<div id="printArea"></div>
+<input type="file" id="fileIn" hidden>
+<script>
+'use strict';
+/* =========================================================
+   MedRecall – Medicine & MR Manager (single-file, offline)
+   Data is stored ONLY in this browser (localStorage).
+   ========================================================= */
+const APP_VERSION='1.0';
+const KEY='medrecall_db_v1';
+
+/* ---------- small helpers ---------- */
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=p=>p+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const pad=n=>String(n).padStart(2,'0');
+const dstr=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today=()=>dstr(new Date());
+const nowLocal=()=>{const d=new Date();return `${dstr(d)}T${pad(d.getHours())}:${pad(d.getMinutes())}`};
+const nowISO=()=>new Date().toISOString();
+const addDays=(ds,n)=>{const d=new Date(ds+'T00:00');d.setDate(d.getDate()+n);return dstr(d)};
+const parseD=s=>{if(!s)return null;const d=new Date(s.length<=10?s+'T00:00':s);return isNaN(d)?null:d};
+const fmtDate=s=>{const d=parseD(s);return d?d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):esc(s||'')};
+const fmtDT=s=>{const d=parseD(s);if(!d)return esc(s||'');return d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})+(s.length>10?', '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'')};
+const daysBetween=(a,b)=>Math.round((parseD(b.slice(0,10))-parseD(a.slice(0,10)))/864e5);
+const ago=s=>{if(!s)return '';const n=daysBetween(s,today());return n===0?'today':n===1?'yesterday':n>0?n+' days ago':'in '+(-n)+' days'};
+const num=v=>{const n=parseFloat(String(v??'').replace(/[,₹\s]/g,''));return isNaN(n)?0:n};
+const money=n=>'₹'+(Number(n)||0).toLocaleString('en-IN',{maximumFractionDigits:2});
+const norm=s=>String(s??'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();
+const nkey=s=>norm(s).replace(/[^a-z0-9.]/g,'');
+const clone=o=>JSON.parse(JSON.stringify(o));
+const uniq=a=>[...new Set(a)];
+const byName=(a,b)=>String(a.name||a.brand||'').localeCompare(String(b.name||b.brand||''),'en',{sensitivity:'base'});
+function toast(msg,err){const d=document.createElement('div');d.textContent=msg;if(err)d.className='err';$('#toast').appendChild(d);setTimeout(()=>d.remove(),err?5000:2600)}
+
+/* ---------- reference lists ---------- */
+const FORMS=['Tablet','Capsule','Injection','Syrup','Suspension','Drops','Cream','Ointment','Gel','Lotion','Inhaler','Rotacap','Respule / Nebuliser','Sachet / Powder','Spray','Patch','Suppository','Other'];
+const CATEGORIES=['Antihypertensive','Antidiabetic','Lipid-lowering','Antiplatelet / Anticoagulant','Cardiac (other)','Antibiotic / Antimicrobial','Antifungal','Antiviral','Analgesic / NSAID','Gastrointestinal / Acid-peptic','Respiratory','Antihistamine / Anti-allergic','Vitamins / Supplements','Neurology','Psychiatry','Dermatology','Endocrine (other)','Urology','Gynaecology','Orthopaedic','Ophthalmic','Paediatric','Other'];
+const SOURCES=['Package insert','Official product information / PI','Carton / label','Company literature / visual aid','MR (verbal)','CDSCO / official database','Other'];
+const DESIGNATIONS=['Area Sales Manager (ASM)','Regional Sales Manager (RSM)','Zonal Sales Manager (ZSM)','District Manager','Product Manager','Medical Advisor','Other'];
+const FREQS=['Weekly','Fortnightly','Monthly','Every 2–3 months','Irregular'];
+const GIFT_CATS=['Educational material','Permitted promotional item','Hospitality','Travel support','Speaker fee','Consultancy fee','Research payment','Other'];
+const GIFT_STATUS=['offered','received','declined','returned','pending'];
+const REVIEW_STATUS=['Not yet reviewed','Reviewed – documentation complete','Needs clarification','Reviewed – declined / returned'];
+
+/* ---------- database ---------- */
+const COLS=['medicines','companies','mrs','managers','visits','gifts'];
+function blankDB(){return {schema:1,medicines:[],companies:[],mrs:[],managers:[],visits:[],gifts:[],quiz:{},settings:{lastBackup:null,created:nowISO(),hideComp:false}}}
+function normalizeDB(d){const o=Object.assign(blankDB(),d||{});COLS.forEach(c=>{if(!Array.isArray(o[c]))o[c]=[]});if(!o.quiz||typeof o.quiz!=='object')o.quiz={};o.settings=Object.assign(blankDB().settings,o.settings||{});return o}
+let storageOK=true;
+function loadDB(){
+  let raw=null;
+  try{raw=localStorage.getItem(KEY)}catch(e){storageOK=false}
+  if(raw){try{return normalizeDB(JSON.parse(raw))}catch(e){try{localStorage.setItem(KEY+'_corrupt_'+Date.now(),raw)}catch(_){}alert('Stored MedRecall data could not be read. A copy was kept; please restore from your latest JSON backup.')}}
+  const d=blankDB();seedDemo(d);return d;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db));storageOK=true}catch(e){storageOK=false;toast('⚠ Could not save to browser storage (full or blocked). Download a JSON backup now!',true)}}
+const byId=(col,id)=>id?db[col].find(x=>x.id===id)||null:null;
+const coName=id=>byId('companies',id)?.name||'';
+const mrLabel=r=>byId('mrs',r.mrId)?.name||r.mrName||'—';
+const coLabel=r=>byId('companies',r.companyId)?.name||r.companyName||'';
+const medLabel=(id,i,r)=>byId('medicines',id)?.brand||(r&&r.brandNames&&r.brandNames[i])||'(deleted brand)';
+const compStr=m=>(m.ingredients||[]).filter(i=>i.name).map(i=>i.name+(i.strength?' '+i.strength:'')).join(' + ');
+const compOrNone=m=>compStr(m)||'Composition not recorded';
+function ensureCompany(name){const n=nkey(name);let c=db.companies.find(x=>nkey(x.name)===n);if(!c){c={id:uid('co'),name:name.trim(),divisions:'',portfolio:'',hq:'',notes:'',created:nowISO(),updated:nowISO()};db.companies.push(c)}return c}
+function lastVisitOf(mrId){let best=null;db.visits.forEach(v=>{if(v.mrId===mrId&&(!best||v.datetime>best.datetime))best=v});return best}
+function mrLastDate(mr){const v=lastVisitOf(mr.id);const a=v?v.datetime.slice(0,10):'';const b=mr.lastVisitManual||'';return a>b?a:b}
+function visitsOf(mrId){return db.visits.filter(v=>v.mrId===mrId).sort((a,b)=>b.datetime.localeCompare(a.datetime))}
+
+/* ---------- demonstration data (fictional, unverified) ---------- */
+function seedDemo(d){
+  const t=today(),c1=uid('co'),c2=uid('co'),r1=uid('mr'),r2=uid('mr'),g1=uid('mgr');
+  const DEMO_NOTE='DEMONSTRATION DATA – fictional brand, NOT verified medical information. Delete or replace with your own verified entries.';
+  d.companies.push(
+    {id:c1,name:'Demo Pharma Ltd (fictional)',divisions:'Cardio, Diabeto',portfolio:'Demonstration portfolio',hq:'',notes:'Fictional demonstration company.',demo:true,created:nowISO(),updated:nowISO()},
+    {id:c2,name:'Sample Healthcare (fictional)',divisions:'Gastro',portfolio:'Demonstration portfolio',hq:'',notes:'Fictional demonstration company.',demo:true,created:nowISO(),updated:nowISO()});
+  const mk=(brand,generic,ings,form,cat,co,div,mr,days)=>({id:uid('med'),brand,generic,ingredients:ings,form,strength:ings.map(i=>i.strength).join(' / '),pack:'10 tablets (demo)',category:cat,indications:'',dosage:'',companyId:co,division:div,mrId:mr,dateIntroduced:addDays(t,-days),price:'',source:'Other',sourceDetails:'Demonstration data',verified:false,starred:false,notes:DEMO_NOTE,mnemonic:'',demo:true,created:new Date(Date.now()-days*864e5).toISOString(),updated:nowISO()});
+  const meds=[
+    mk('DemoAmlo 5','Amlodipine',[{name:'Amlodipine',strength:'5 mg'}],'Tablet','Antihypertensive',c1,'Cardio',r1,20),
+    mk('DemoTelma 40','Telmisartan',[{name:'Telmisartan',strength:'40 mg'}],'Tablet','Antihypertensive',c1,'Cardio',r1,15),
+    mk('DemoTelma-AM','Telmisartan + Amlodipine',[{name:'Telmisartan',strength:'40 mg'},{name:'Amlodipine',strength:'5 mg'}],'Tablet','Antihypertensive',c1,'Cardio',r1,10),
+    mk('DemoMetfo SR 500','Metformin',[{name:'Metformin',strength:'500 mg'}],'Tablet','Antidiabetic',c1,'Diabeto',r1,8),
+    mk('DemoGlim-M2','Glimepiride + Metformin',[{name:'Glimepiride',strength:'2 mg'},{name:'Metformin',strength:'500 mg'}],'Tablet','Antidiabetic',c1,'Diabeto',r1,5),
+    mk('DemoPanto 40','Pantoprazole',[{name:'Pantoprazole',strength:'40 mg'}],'Tablet','Gastrointestinal / Acid-peptic',c2,'Gastro',r2,3)];
+  meds[1].mnemonic='Demo mnemonic: "TELMA = Telmisartan"';
+  d.medicines.push(...meds);
+  d.mrs.push(
+    {id:r1,name:'Demo MR – Rahul Example',phone:'',companyId:c1,division:'Cardio',territory:'Demo City North',brandIds:meds.slice(0,5).map(m=>m.id),firstVisit:addDays(t,-60),lastVisitManual:'',frequency:'Fortnightly',notes:'Fictional demonstration MR.',companyHistory:[],companySince:addDays(t,-60),demo:true,created:nowISO(),updated:nowISO()},
+    {id:r2,name:'Demo MR – Priya Sample',phone:'',companyId:c2,division:'Gastro',territory:'Demo City South',brandIds:[meds[5].id],firstVisit:addDays(t,-30),lastVisitManual:'',frequency:'Monthly',notes:'Fictional demonstration MR.',companyHistory:[],companySince:addDays(t,-30),demo:true,created:nowISO(),updated:nowISO()});
+  d.managers.push({id:g1,name:'Demo ASM – Anil Placeholder',designation:'Area Sales Manager (ASM)',companyId:c1,division:'Cardio',territory:'Demo City',phone:'',mrIds:[r1],notes:'Fictional demonstration manager.',demo:true,created:nowISO(),updated:nowISO()});
+  d.visits.push(
+    {id:uid('vis'),datetime:addDays(t,-14)+'T12:30',mrId:r1,mrName:'Demo MR – Rahul Example',companyId:c1,companyName:'Demo Pharma Ltd (fictional)',division:'Cardio',brandIds:[meds[1].id,meds[2].id],brandNames:[meds[1].brand,meds[2].brand],discussed:'Demo: discussed combination vs single-ingredient brand.',samples:[],followUp:'Demo: bring product information leaflet',nextVisit:addDays(t,2),notes:'Demonstration visit.',demo:true,created:nowISO(),updated:nowISO()},
+    {id:uid('vis'),datetime:t+'T11:00',mrId:r2,mrName:'Demo MR – Priya Sample',companyId:c2,companyName:'Sample Healthcare (fictional)',division:'Gastro',brandIds:[meds[5].id],brandNames:[meds[5].brand],discussed:'Demo visit.',samples:[{medId:meds[5].id,name:meds[5].brand,qty:'2 strips',expiry:addDays(t,365)}],followUp:'',nextVisit:addDays(t,30),notes:'Demonstration visit.',demo:true,created:nowISO(),updated:nowISO()});
+  d.gifts.push({id:uid('gift'),date:addDays(t,-7),mrId:r1,mrName:'Demo MR – Rahul Example',companyId:c1,companyName:'Demo Pharma Ltd (fictional)',description:'Demo: reference textbook offered',category:'Educational material',value:'',amountOffered:'',amountReceived:'',status:'declined',purpose:'Demo record',documentation:'',event:'',reviewStatus:'Not yet reviewed',reviewNotes:'',reviewDate:'',notes:'Demonstration record.',demo:true,created:nowISO(),updated:nowISO()});
+  d.settings.demoLoaded=true;
+}
+
+let db=loadDB();
+const ui={view:'dashboard',gq:'',medF:{q:'',company:'',form:'',category:'',mr:'',recent:'',starred:false,ver:'',sort:'brand',mode:'list'},medSel:new Set(),peopleTab:'mrs',peopleQ:'',coQ:'',visF:{q:'',mr:'',company:'',from:'',to:''},giftF:{q:'',status:'',category:'',company:'',mr:'',year:'',by:'month'},briefMr:''};
+const quizS={active:false};
+
+/* ---------- search engine ---------- */
+function phon(s){return norm(s).replace(/ph/g,'f').replace(/y/g,'i').replace(/z/g,'s').replace(/c(?=[ei])/g,'s').replace(/c/g,'k').replace(/q/g,'k').replace(/x/g,'ks').replace(/([a-z])\1+/g,'$1')}
+function lev(a,b){if(a===b)return 0;const m=a.length,n=b.length;if(!m)return n;if(!n)return m;let p=Array.from({length:n+1},(_,i)=>i);for(let i=1;i<=m;i++){const c=[i];for(let j=1;j<=n;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]===b[j-1]?0:1));p=c}return p[n]}
+function tokens(q){
+  const out=[];
+  norm(q).split(/[\s,+\/;()]+/).filter(Boolean).forEach(t=>{
+    let m=t.match(/^(\d+(?:\.\d+)?)(mg|mcg|g|gm|ml|iu|%|u)$/);if(m){out.push(m[1]);return}
+    m=t.match(/^([a-z]{3,})(\d+(?:\.\d+)?)$/);if(m){out.push(m[1],m[2]);return}
+    out.push(t)});
+  return out;
+}
+function matchTok(t,hay,hayPh,words){
+  if(/^\d+(\.\d+)?$/.test(t))return new RegExp('(^|[^0-9.])'+t.replace('.','\\.')+'(?![0-9])').test(hay)?3:0;
+  if(hay.includes(t))return words.some(w=>w.startsWith(t))?4:3;
+  const tp=phon(t);if(tp.length>=3&&hayPh.includes(tp))return 2;
+  if(t.length>=4){const md=t.length>=8?2:1;for(const w of words){if(w.length<t.length-1)continue;if(lev(w.slice(0,t.length),t)<=md||lev(w,t)<=md)return 1}}
+  return 0;
+}
+function scoreText(toks,text,bonusText){
+  if(!toks.length)return 1;
+  const hay=norm(text),hayPh=phon(text),words=hay.split(/[^a-z0-9.]+/).filter(Boolean);
+  const bh=bonusText?norm(bonusText):'';let s=0;
+  for(const t of toks){const k=matchTok(t,hay,hayPh,words);if(!k)return 0;s+=k;if(bh&&bh.includes(t))s+=3}
+  return s;
+}
+function medHay(m){return [m.brand,m.generic,compStr(m),m.form,m.strength,m.pack,m.category,m.indications,coName(m.companyId),m.division,byId('mrs',m.mrId)?.name,m.notes,m.mnemonic,m.sourceDetails].join(' | ')}
+function searchMeds(q,list){const tk=tokens(q);return (list||db.medicines).map(m=>({m,s:scoreText(tk,medHay(m),m.brand+' '+(m.generic||''))})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s||byName(a.m,b.m)).map(x=>x.m)}
+function searchGen(q,list,hayFn){const tk=tokens(q);return list.map(r=>({r,s:scoreText(tk,hayFn(r),r.name)})).filter(x=>x.s>0).sort((a,b)=>b.s-a.s||byName(a.r,b.r)).map(x=>x.r)}
+const coHay=c=>[c.name,c.divisions,c.portfolio,c.hq,c.notes].join(' | ');
+const mrHay=r=>[r.name,r.phone,coName(r.companyId),r.division,r.territory,r.notes,(r.brandIds||[]).map(id=>byId('medicines',id)?.brand).join(' ')].join(' | ');
+const mgrHay=g=>[g.name,g.designation,coName(g.companyId),g.division,g.territory,g.phone,g.notes].join(' | ');
+
+/* ---------- UI building blocks ---------- */
+const fld=(label,inner,cls='')=>`<label class="fld ${cls}"><span>${label}</span>${inner}</label>`;
+const inp=(name,val,attrs='')=>`<input name="${name}" value="${esc(val)}" ${attrs}>`;
+const area=(name,val,attrs='')=>`<textarea name="${name}" rows="2" ${attrs}>${esc(val)}</textarea>`;
+const opts=(list,val,blank)=>(blank!==undefined?`<option value="">${esc(blank)}</option>`:'')+list.map(o=>{const [v,l]=Array.isArray(o)?o:[o,o];return `<option value="${esc(v)}" ${String(v)===String(val??'')?'selected':''}>${esc(l)}</option>`}).join('');
+const sel=(name,list,val,blank,attrs='')=>`<select name="${name}" ${attrs}>${opts(list,val,blank)}</select>`;
+const coList=()=>db.companies.slice().sort(byName).map(c=>[c.id,c.name]);
+const mrList=()=>db.mrs.slice().sort(byName).map(r=>[r.id,r.name+(coName(r.companyId)?' · '+coName(r.companyId):'')]);
+const medList=()=>db.medicines.slice().sort(byName).map(m=>[m.id,m.brand+(m.form?' ('+m.form+')':'')]);
+function coSelect(name,val){return `<select name="${name}" data-chg="coNew">${opts(coList(),val,'— None —')}<option value="__new">+ New company…</option></select><input name="newCompany" placeholder="New company name" style="display:none;margin-top:6px">`}
+function datalists(){
+  const ings=uniq(db.medicines.flatMap(m=>(m.ingredients||[]).map(i=>i.name)).filter(Boolean)).sort();
+  const cats=uniq([...CATEGORIES,...db.medicines.map(m=>m.category).filter(Boolean)]).sort();
+  const divs=uniq([...db.companies.flatMap(c=>(c.divisions||'').split(',').map(s=>s.trim())),...db.medicines.map(m=>m.division),...db.mrs.map(r=>r.division)].filter(Boolean)).sort();
+  const terr=uniq([...db.mrs.map(r=>r.territory),...db.managers.map(g=>g.territory)].filter(Boolean)).sort();
+  const dl=(id,a)=>`<datalist id="${id}">${a.map(x=>`<option value="${esc(x)}">`).join('')}</datalist>`;
+  return dl('dl_ings',ings)+dl('dl_cats',cats)+dl('dl_divs',divs)+dl('dl_terr',terr);
+}
+function msel(name,items,selected,ph){
+  const s=new Set(selected||[]);
+  const sorted=items.slice().sort((a,b)=>(s.has(b.id)-s.has(a.id)));
+  return `<div class="msel"><input type="search" class="msf" placeholder="${esc(ph||'Type to filter…')}" data-inp="msFilter"><div class="mslist">${sorted.length?sorted.map(it=>`<label class="msi" data-s="${esc(norm(it.label+' '+(it.sub||'')))}"><input type="checkbox" name="${name}" value="${esc(it.id)}" ${s.has(it.id)?'checked':''}><span>${esc(it.label)}${it.sub?`<small>${esc(it.sub)}</small>`:''}</span></label>`).join(''):'<div class="muted" style="padding:6px">Nothing recorded yet.</div>'}</div></div>`;
+}
+const medItems=()=>db.medicines.slice().sort(byName).map(m=>({id:m.id,label:m.brand+(m.form?' ('+m.form+')':''),sub:compOrNone(m)+(coName(m.companyId)?' · '+coName(m.companyId):'')}));
+function verBadge(m){return (m.demo?'<span class="badge b-demo">DEMO</span> ':'')+(m.verified?'<span class="badge b-ver" title="Verified by you against the recorded source">✓ Verified</span>':'<span class="badge b-unv" title="Not verified against package insert / official product information">⚠ Unverified</span>')}
+function medCard(m,opt={}){
+  const co=coName(m.companyId);
+  return `<div class="item" data-act="viewMed" data-id="${m.id}">
+   <button class="star ${m.starred?'on':''}" data-act="starMed" data-id="${m.id}" title="Star / bookmark" aria-label="Star">★</button>
+   ${opt.select?`<label class="selbox" data-act="noop"><input type="checkbox" data-chg="selMed" value="${m.id}" ${ui.medSel.has(m.id)?'checked':''}>Compare</label>`:''}
+   <div class="t" style="padding-right:${opt.select?'130px':'36px'}">${esc(m.brand)} <small class="muted">${esc(m.form||'')}</small></div>
+   <div class="comp" data-act="reveal">${esc(compOrNone(m))}</div>
+   <div class="meta">${esc([co,m.division].filter(Boolean).join(' · '))}${m.category?' · '+esc(m.category):''}</div>
+   <div style="margin-top:4px">${verBadge(m)}</div></div>`;
+}
+function emptyBox(msg,btn){return `<div class="empty">${msg}${btn?'<div style="margin-top:10px">'+btn+'</div>':''}</div>`}
+
+/* ---------- modal ---------- */
+let modalSubmit=null;
+function openModal(title,html,onSubmit,wide){
+  $('#modalTitle').textContent=title;$('#modalBody').innerHTML=html;modalSubmit=onSubmit||null;
+  $('#modalBox').classList.toggle('wide',!!wide);$('#modal').classList.remove('hidden');document.body.classList.add('modal-open');$('#modal').scrollTop=0;
+}
+function closeModal(){$('#modal').classList.add('hidden');document.body.classList.remove('modal-open');$('#modalBody').innerHTML='';modalSubmit=null}
+const formFoot=(label='Save')=>`<div class="formfoot"><button type="button" class="btn sec" data-act="closeModal">Cancel</button><button type="submit" class="btn">${label}</button></div>`;
+
+/* ---------- navigation ---------- */
+const NAV=[['dashboard','⌂','Dashboard'],['medicines','💊','Medicines'],['companies','🏢','Companies'],['people','👤','MRs & Managers'],['visits','📅','Visit History'],['gifts','🎁','Gifts & Honorarium'],['quiz','🧠','Flashcards & Quiz'],['reports','📊','Reports'],['settings','💾','Backup & Settings']];
+function renderNav(){
+  const lb=db.settings.lastBackup;
+  $('#nav').innerHTML=NAV.map(([k,i,l])=>`<a href="#/${k}" class="${ui.view===k?'on':''}"><span class="ni">${i}</span>${l}</a>`).join('')+
+   `<div class="navfoot">Last backup: <b>${lb?fmtDate(lb):'never'}</b><br>Data is stored only in this browser on this device.<br><small>v${APP_VERSION}</small></div>`;
+}
+const VIEWS={dashboard:vDashboard,medicines:vMedicines,companies:vCompanies,people:vPeople,visits:vVisits,gifts:vGifts,quiz:vQuiz,reports:vReports,settings:vSettings,search:vSearch};
+function route(){const h=location.hash.replace(/^#\/?/,'')||'dashboard';ui.view=VIEWS[h]?h:'dashboard';render(true)}
+function render(top){
+  const y=window.scrollY;
+  $('#main').innerHTML=VIEWS[ui.view]();
+  renderNav();document.body.classList.remove('navopen');
+  if(ui.view==='medicines')updMeds();
+  if(ui.view==='search')updSearch();
+  window.scrollTo(0,top?0:y);
+}
+const refresh=()=>render(false);
+function go(v){if(location.hash==='#/'+v)render(true);else location.hash='#/'+v}
+
+/* ---------- backup reminder ---------- */
+function backupBanner(){
+  const lb=db.settings.lastBackup;const n=lb?daysBetween(lb,today()):null;
+  let h='';
+  if(!storageOK)h+=`<div class="alert bad"><b>Browser storage is not available.</b> Changes may not be saved. Use a normal (non-private) browser window and download a backup.</div>`;
+  if(n===null||n>=7)h+=`<div class="alert warn noprint">💾 <b>${n===null?'You have never downloaded a backup.':'Last backup was '+n+' days ago.'}</b> Data lives only in this browser on this device — clearing browser data or losing the device destroys it. <a href="#/settings">Back up now</a></div>`;
+  return h;
+}
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+function vDashboard(){
+  const t=today();
+  const todays=db.visits.filter(v=>(v.datetime||'').slice(0,10)===t).sort((a,b)=>a.datetime.localeCompare(b.datetime));
+  const latest={};db.visits.forEach(v=>{if(!latest[v.mrId]||v.datetime>latest[v.mrId].datetime)latest[v.mrId]=v});
+  const follow=Object.values(latest).filter(v=>v.nextVisit&&v.nextVisit>=addDays(t,-14)).sort((a,b)=>a.nextVisit.localeCompare(b.nextVisit)).slice(0,8);
+  const recentMeds=db.medicines.slice().sort((a,b)=>(b.created||'').localeCompare(a.created||'')).slice(0,6);
+  const sortedVis=db.visits.slice().sort((a,b)=>b.datetime.localeCompare(a.datetime));
+  const recentMrs=uniq(sortedVis.map(v=>v.mrId)).slice(0,6).map(id=>latest[id]);
+  const discussed=uniq(sortedVis.flatMap(v=>v.brandIds||[])).filter(id=>byId('medicines',id)).slice(0,8);
+  const cats={};db.medicines.forEach(m=>{const k=m.category||'Uncategorised';cats[k]=(cats[k]||0)+1});
+  const cos={};db.medicines.forEach(m=>{const k=m.companyId||'';cos[k]=(cos[k]||0)+1});
+  const anyDemo=COLS.some(c=>db[c].some(x=>x.demo));
+  return `${backupBanner()}
+  ${anyDemo?`<div class="alert info noprint">ℹ️ This app contains a few <b>fictional demonstration records</b> (marked <span class="badge b-demo">DEMO</span>). Their compositions are illustrative only and are <b>not verified medical information</b>. Remove them anytime in <a href="#/settings">Backup &amp; Settings</a>.</div>`:''}
+  <div class="quick">
+    <button class="btn" data-act="addMed">＋ Add medicine</button>
+    <button class="btn" data-act="addVisit">＋ Add MR visit</button>
+    <button class="btn sec" data-act="focusQuick">🔍 Composition lookup</button>
+    <button class="btn sec" data-act="startDaily">🧠 Start revision quiz</button>
+  </div>
+  <div class="card" id="quickCard">
+    <h2>What was this medicine's composition?</h2>
+    <input id="quickQ" type="search" placeholder="Type a brand or a salt — e.g. telma, metformin, amlo 5" data-inp="quickLookup" autocomplete="off">
+    <div id="quickRes" style="margin-top:8px"><div class="hint">Type a brand name to see its composition, or a salt (e.g. telmisartan) to see every recorded brand containing it.</div></div>
+  </div>
+  <div class="stats">
+    <a class="stat" href="#/medicines"><b>${db.medicines.length}</b><span>Medicine brands</span></a>
+    <a class="stat" href="#/companies"><b>${db.companies.length}</b><span>Companies</span></a>
+    <a class="stat" href="#/people" data-act="peopleTab" data-tab="mrs"><b>${db.mrs.length}</b><span>MRs</span></a>
+    <a class="stat" href="#/people" data-act="peopleTab" data-tab="managers"><b>${db.managers.length}</b><span>Managers</span></a>
+    <a class="stat" href="#/visits"><b>${db.visits.length}</b><span>Visits logged</span></a>
+    <a class="stat" href="#/medicines" data-act="filterUnverified"><b>${db.medicines.filter(m=>!m.verified).length}</b><span>Unverified compositions</span></a>
+  </div>
+  <div class="grid2">
+   <div class="card"><div class="row between"><h2 style="margin:0">Today's MR visits</h2><button class="btn sm" data-act="addVisit">＋ Visit</button></div>
+     ${todays.length?todays.map(v=>visitLine(v)).join(''):'<p class="muted">No visits logged today.</p>'}</div>
+   <div class="card"><h2>MR briefing – before the MR walks in</h2>
+     <select data-chg="briefMr">${opts(mrList(),ui.briefMr,'Select an MR…')}</select>
+     <div id="brief" style="margin-top:10px">${ui.briefMr&&byId('mrs',ui.briefMr)?mrBrief(ui.briefMr):'<p class="hint">Shows the company, brands promoted, brands discussed before and last visit notes.</p>'}</div></div>
+   <div class="card"><h2>Upcoming follow-ups</h2>
+     ${follow.length?follow.map(v=>`<div class="li click" data-act="viewMr" data-id="${v.mrId}"><b>${fmtDate(v.nextVisit)}</b> ${v.nextVisit<t?'<span class="badge b-bad">overdue</span>':v.nextVisit===t?'<span class="badge b-info">today</span>':''}<br>${esc(mrLabel(v))} <span class="muted">· ${esc(coLabel(v))}</span>${v.followUp?`<div class="meta">↳ ${esc(v.followUp)}</div>`:''}</div>`).join(''):'<p class="muted">No follow-ups scheduled. Set “Next expected visit” when logging a visit.</p>'}</div>
+   <div class="card"><h2>Recently visited MRs</h2>
+     ${recentMrs.length?recentMrs.map(v=>`<div class="li click" data-act="viewMr" data-id="${v.mrId}"><b>${esc(mrLabel(v))}</b> <span class="muted">· ${esc(coLabel(v))}</span><br><small class="muted">${fmtDT(v.datetime)} (${ago(v.datetime)})</small></div>`).join(''):'<p class="muted">No visits yet.</p>'}</div>
+   <div class="card ${db.settings.hideComp?'hidecomp':''}"><h2>Recently added brands</h2>
+     ${recentMeds.length?recentMeds.map(m=>`<div class="li click" data-act="viewMed" data-id="${m.id}"><b>${esc(m.brand)}</b> ${m.verified?'':'<span class="badge b-unv">⚠</span>'}<br><span class="compv" data-act="reveal">${esc(compOrNone(m))}</span></div>`).join(''):emptyBox('No medicines yet.','<button class="btn sm" data-act="addMed">＋ Add medicine</button>')}</div>
+   <div class="card ${db.settings.hideComp?'hidecomp':''}"><h2>Recently discussed medicines</h2>
+     ${discussed.length?discussed.map(id=>{const m=byId('medicines',id);return `<div class="li click" data-act="viewMed" data-id="${id}"><b>${esc(m.brand)}</b><br><span class="compv" data-act="reveal">${esc(compOrNone(m))}</span></div>`}).join(''):'<p class="muted">Brands discussed during visits appear here.</p>'}</div>
+   <div class="card"><h2>Medicines by therapeutic category</h2>
+     ${Object.keys(cats).length?Object.entries(cats).sort().map(([k,n])=>`<button class="chip" data-act="medFilter" data-k="category" data-v="${esc(k==='Uncategorised'?'__none':k)}">${esc(k)} <b>${n}</b></button>`).join(''):'<p class="muted">—</p>'}</div>
+   <div class="card"><h2>Brands by company</h2>
+     ${Object.keys(cos).length?Object.entries(cos).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<button class="chip" data-act="medFilter" data-k="company" data-v="${esc(k||'__none')}">${esc(coName(k)||'No company')} <b>${n}</b></button>`).join(''):'<p class="muted">—</p>'}</div>
+  </div>`;
+}
+function visitLine(v){
+  return `<div class="li click" data-act="viewVisit" data-id="${v.id}"><b>${fmtDT(v.datetime)}</b> — ${esc(mrLabel(v))} <span class="muted">· ${esc([coLabel(v),v.division].filter(Boolean).join(' · '))}</span>
+   ${(v.brandIds||[]).length?`<div class="meta">Brands: ${(v.brandIds||[]).map((id,i)=>esc(medLabel(id,i,v))).join(', ')}</div>`:''}
+   ${(v.samples||[]).length?`<div class="meta">Samples: ${v.samples.map(s=>esc((byId('medicines',s.medId)?.brand||s.name||'')+(s.qty?' ×'+s.qty:''))).join(', ')}</div>`:''}
+   ${v.followUp?`<div class="meta">Follow-up: ${esc(v.followUp)}</div>`:''}</div>`;
+}
+function quickRes(q){
+  if(!q.trim())return '<div class="hint">Type a brand name to see its composition, or a salt to see every brand containing it.</div>';
+  const res=searchMeds(q).slice(0,12);
+  const nq=nkey(q);
+  const ingHits=uniq(db.medicines.flatMap(m=>(m.ingredients||[]).map(i=>i.name)).filter(n=>n&&nq.length>=3&&nkey(n).includes(nq.replace(/[0-9.]+$/,''))));
+  let h='';
+  if(ingHits.length&&nq.replace(/[0-9.]/g,'').length>=3){
+    h+=ingHits.slice(0,4).map(n=>{const ms=db.medicines.filter(m=>(m.ingredients||[]).some(i=>nkey(i.name)===nkey(n)));return `<div class="alert info" style="margin:6px 0"><b>Brands containing ${esc(n)} (${ms.length}):</b><br>${ms.sort(byName).map(m=>`<button class="chip" data-act="viewMed" data-id="${m.id}">${esc(m.brand)} — ${esc((m.ingredients||[]).filter(i=>nkey(i.name)===nkey(n)).map(i=>i.strength||'?').join(', '))}${(m.ingredients||[]).length>1?' (combo)':''}</button>`).join('')}</div>`}).join('');
+  }
+  h+=res.length?`<div class="list" style="margin-top:6px">${res.map(m=>`<div class="li click" data-act="viewMed" data-id="${m.id}"><b style="font-size:17px">${esc(m.brand)}</b> <small class="muted">${esc(m.form||'')} · ${esc(coName(m.companyId))}</small><div style="font-size:17px">${esc(compOrNone(m))}</div>${verBadge(m)}</div>`).join('')}</div>`:'<p class="muted">No match. <a href="#" data-act="addMed">Add this medicine</a></p>';
+  return h;
+}
+function mrBrief(id){
+  const r=byId('mrs',id);if(!r)return '';
+  const vs=visitsOf(id),last=vs[0];
+  const discussed=uniq(vs.flatMap(v=>v.brandIds||[])).filter(x=>byId('medicines',x));
+  const mgrs=db.managers.filter(g=>(g.mrIds||[]).includes(id));
+  return `<div><b style="font-size:18px">${esc(r.name)}</b> ${r.phone?`<a href="tel:${esc(r.phone)}" class="btn sm sec">📞 ${esc(r.phone)}</a>`:''}</div>
+   <div class="muted">${esc([coName(r.companyId),r.division,r.territory].filter(Boolean).join(' · '))}</div>
+   ${mgrs.length?`<div class="meta">Manager: ${mgrs.map(g=>esc(g.name+' ('+(g.designation||'')+')')).join(', ')}</div>`:''}
+   <div style="margin-top:6px"><b>Last visit:</b> ${last?fmtDT(last.datetime)+' ('+ago(last.datetime)+')':(r.lastVisitManual?fmtDate(r.lastVisitManual):'none logged')}</div>
+   ${last&&last.notes?`<div class="meta">Notes: ${esc(last.notes)}</div>`:''}
+   ${last&&last.followUp?`<div class="meta">Follow-up requested: ${esc(last.followUp)}</div>`:''}
+   <h3>Brands promoted</h3>${(r.brandIds||[]).filter(x=>byId('medicines',x)).map(x=>{const m=byId('medicines',x);return `<button class="chip" data-act="viewMed" data-id="${x}"><b>${esc(m.brand)}</b>&nbsp;${esc(compOrNone(m))}</button>`}).join('')||'<span class="muted">—</span>'}
+   <h3>Brands discussed before</h3>${discussed.map(x=>`<button class="chip" data-act="viewMed" data-id="${x}">${esc(byId('medicines',x).brand)}</button>`).join('')||'<span class="muted">—</span>'}
+   <div class="row" style="margin-top:10px"><button class="btn sm" data-act="addVisit" data-mr="${id}">＋ Log visit</button><button class="btn sm sec" data-act="viewMr" data-id="${id}">Full history (${vs.length})</button></div>`;
+}
+
+/* =========================================================
+   GLOBAL SEARCH
+   ========================================================= */
+function vSearch(){return `<h1>Search results</h1><div class="hint" style="margin-bottom:8px">Searches brands, generic names, ingredients and strengths, companies, MRs, managers, categories, notes and mnemonics. Partial words and minor spelling variations are tolerated.</div><div id="gres"></div>`}
+function updSearch(){
+  const el=$('#gres');if(!el)return;const q=ui.gq;
+  if(!q.trim()){el.innerHTML='<p class="muted">Type in the search bar above.</p>';return}
+  const meds=searchMeds(q),cos=searchGen(q,db.companies,coHay),mrs=searchGen(q,db.mrs,mrHay),mgrs=searchGen(q,db.managers,mgrHay);
+  el.innerHTML=`<div class="${db.settings.hideComp?'hidecomp':''}"><h2>Medicines (${meds.length})</h2>${meds.length?`<div class="grid">${meds.slice(0,60).map(m=>medCard(m)).join('')}</div>`:'<p class="muted">None.</p>'}</div>
+   <h2 style="margin-top:16px">Companies (${cos.length})</h2>${cos.map(c=>`<div class="card li click" data-act="viewCo" data-id="${c.id}"><b>${esc(c.name)}</b> <span class="muted">${esc(c.divisions||'')}</span></div>`).join('')||'<p class="muted">None.</p>'}
+   <h2 style="margin-top:16px">MRs (${mrs.length})</h2>${mrs.map(r=>mrCard(r)).join('')||'<p class="muted">None.</p>'}
+   <h2 style="margin-top:16px">Managers (${mgrs.length})</h2>${mgrs.map(g=>mgrCard(g)).join('')||'<p class="muted">None.</p>'}`;
+}
+
+/* =========================================================
+   MEDICINES
+   ========================================================= */
+function vMedicines(){
+  const f=ui.medF;
+  const cats=uniq(db.medicines.map(m=>m.category).filter(Boolean)).sort();
+  const forms=uniq(db.medicines.map(m=>m.form).filter(Boolean)).sort();
+  return `<div class="row between"><h1 style="margin:0">Medicines</h1><div class="row"><button class="btn" data-act="addMed">＋ Add medicine</button><button class="btn sec" id="cmpBtn" data-act="compare">Compare (${ui.medSel.size})</button></div></div>
+  <div class="tabs" style="margin-top:10px"><button class="btn sm ${f.mode==='list'?'':'sec'}" data-act="medMode" data-m="list">Brand list</button><button class="btn sm ${f.mode==='ing'?'':'sec'}" data-act="medMode" data-m="ing">By ingredient (salt)</button></div>
+  <input type="search" placeholder="Filter: brand, salt, strength, company, MR, notes… e.g. amlo 5" value="${esc(f.q)}" data-inp="medQ" style="margin-bottom:8px">
+  <div class="filters">
+   <select data-chg="medF" data-k="company">${opts(coList(),f.company,'All companies')}<option value="__none" ${f.company==='__none'?'selected':''}>No company</option></select>
+   <select data-chg="medF" data-k="form">${opts(forms,f.form,'All dosage forms')}</select>
+   <select data-chg="medF" data-k="category">${opts(cats,f.category,'All categories')}<option value="__none" ${f.category==='__none'?'selected':''}>Uncategorised</option></select>
+   <select data-chg="medF" data-k="mr">${opts(mrList(),f.mr,'All MRs')}</select>
+   <select data-chg="medF" data-k="recent">${opts([['7','Added in last 7 days'],['30','Added in last 30 days'],['90','Added in last 90 days']],f.recent,'Any time added')}</select>
+   <select data-chg="medF" data-k="ver">${opts([['unv','Unverified only'],['ver','Verified only']],f.ver,'Any verification')}</select>
+   <select data-chg="medF" data-k="sort">${opts([['brand','Sort: Brand A–Z'],['recent','Sort: Recently added'],['updated','Sort: Recently updated'],['company','Sort: Company']],f.sort)}</select>
+  </div>
+  <div class="row" style="margin-bottom:10px"><label class="fld chk"><input type="checkbox" data-chg="medStar" ${f.starred?'checked':''}> ★ Starred only</label>
+   <label class="fld chk"><input type="checkbox" data-chg="hideComp" ${db.settings.hideComp?'checked':''}> Hide compositions (tap to reveal)</label>
+   <span class="sp"></span><button class="btn sm ghost" data-act="clearMedF">Clear filters</button>${ui.medSel.size?'<button class="btn sm ghost" data-act="clearSel">Clear compare selection</button>':''}</div>
+  <div id="medRes"></div>`;
+}
+function filteredMeds(){
+  const f=ui.medF;let list=db.medicines.filter(m=>{
+    if(f.company&&(f.company==='__none'?m.companyId:m.companyId!==f.company))return false;
+    if(f.form&&m.form!==f.form)return false;
+    if(f.category&&(f.category==='__none'?m.category:m.category!==f.category))return false;
+    if(f.mr&&m.mrId!==f.mr&&!(byId('mrs',f.mr)?.brandIds||[]).includes(m.id))return false;
+    if(f.recent&&(m.created||'')<addDays(today(),-num(f.recent)))return false;
+    if(f.starred&&!m.starred)return false;
+    if(f.ver==='unv'&&m.verified)return false;if(f.ver==='ver'&&!m.verified)return false;
+    return true});
+  if(f.q.trim())list=searchMeds(f.q,list);
+  else list.sort(f.sort==='recent'?(a,b)=>(b.created||'').localeCompare(a.created||''):f.sort==='updated'?(a,b)=>(b.updated||'').localeCompare(a.updated||''):f.sort==='company'?(a,b)=>coName(a.companyId).localeCompare(coName(b.companyId))||byName(a,b):byName);
+  return list;
+}
+function updMeds(){
+  const el=$('#medRes');if(!el)return;const list=filteredMeds();
+  const hc=db.settings.hideComp?'hidecomp':'';
+  if(ui.medF.mode==='ing'){
+    const map={};list.forEach(m=>(m.ingredients||[]).forEach(i=>{if(!i.name)return;const k=nkey(i.name);(map[k]||(map[k]={name:i.name,rows:[]})).rows.push({m,str:i.strength})}));
+    const ks=Object.keys(map).sort();
+    el.innerHTML=ks.length?`<p class="hint">${ks.length} ingredients across ${list.length} brands. Tap a brand to open it.</p>`+ks.map(k=>`<div class="card"><h3 style="margin:0 0 6px">${esc(map[k].name)} <small class="muted">(${map[k].rows.length} brand${map[k].rows.length>1?'s':''})</small></h3>${map[k].rows.sort((a,b)=>byName(a.m,b.m)).map(r=>`<button class="chip" data-act="viewMed" data-id="${r.m.id}"><b>${esc(r.m.brand)}</b>&nbsp;${esc(r.str||'strength?')}${(r.m.ingredients||[]).length>1?' · combo':''}${r.m.verified?'':' ⚠'}</button>`).join('')}</div>`).join(''):emptyBox('No ingredients recorded for the current filter.');
+    return;
+  }
+  el.innerHTML=list.length?`<p class="hint">${list.length} of ${db.medicines.length} brands</p><div class="grid ${hc}">${list.map(m=>medCard(m,{select:true})).join('')}</div>`:emptyBox(db.medicines.length?'No medicines match these filters.':'No medicines recorded yet.','<button class="btn sm" data-act="addMed">＋ Add medicine</button>');
+}
+function showMed(id){
+  const m=byId('medicines',id);if(!m)return;
+  const q=db.quiz['med:'+id];const vs=db.visits.filter(v=>(v.brandIds||[]).includes(id)).sort((a,b)=>b.datetime.localeCompare(a.datetime));
+  const samples=db.visits.flatMap(v=>(v.samples||[]).filter(s=>s.medId===id).map(s=>({...s,date:v.datetime})));
+  const mr=byId('mrs',m.mrId);const promoters=db.mrs.filter(r=>(r.brandIds||[]).includes(id));
+  const sameComp=db.medicines.filter(x=>x.id!==id&&compKey(x)&&compKey(x)===compKey(m));
+  const row=(k,v)=>v?`<dt>${k}</dt><dd>${v}</dd>`:'';
+  openModal(m.brand,`
+   <div class="row" style="margin-bottom:8px">${verBadge(m)} ${m.starred?'<span class="badge b-info">★ Starred</span>':''}</div>
+   ${m.verified?'':'<div class="alert warn">⚠ This composition has <b>not been verified</b> against the package insert or official product information. Verify before relying on it.</div>'}
+   <div style="font-size:20px;font-weight:600;margin-bottom:10px">${esc(compOrNone(m))}</div>
+   <dl class="kv">
+    ${row('Generic / salt',esc(m.generic))}
+    ${row('Ingredients',(m.ingredients||[]).filter(i=>i.name).map(i=>esc(i.name)+' — '+esc(i.strength||'strength not recorded')).join('<br>'))}
+    ${row('Dosage form',esc(m.form))}${row('Strength',esc(m.strength))}${row('Pack size',esc(m.pack))}
+    ${row('Category',esc(m.category))}${row('Indications (recorded)',esc(m.indications))}${row('Standard dosage (your entry)',esc(m.dosage))}
+    ${row('Company',m.companyId?`<a href="#" data-act="viewCo" data-id="${m.companyId}">${esc(coName(m.companyId))}</a>`:'')}${row('Division',esc(m.division))}
+    ${row('MR',mr?`<a href="#" data-act="viewMr" data-id="${mr.id}">${esc(mr.name)}</a>`:'')}
+    ${row('Promoted by',promoters.map(r=>esc(r.name)).join(', '))}
+    ${row('Introduced / discussed',fmtDate(m.dateIntroduced))}${row('Price',m.price?money(m.price):'')}
+    ${row('Composition source',esc([m.source,m.sourceDetails].filter(Boolean).join(' — ')))}
+    ${row('Memory aid',esc(m.mnemonic))}${row('Notes',esc(m.notes))}
+    ${row('Quiz record',q?`✓ ${q.c||0} · ✗ ${q.w||0}${q.lastWrong?' · last missed '+fmtDate(q.lastWrong):''}`:'')}
+    ${row('Same composition as',sameComp.map(x=>`<a href="#" data-act="viewMed" data-id="${x.id}">${esc(x.brand)}</a>`).join(', '))}
+    ${row('Last updated',fmtDT(m.updated))}
+   </dl>
+   ${vs.length?`<h3>Discussed in visits (${vs.length})</h3>${vs.slice(0,8).map(v=>`<div class="li"><b>${fmtDate(v.datetime)}</b> — ${esc(mrLabel(v))}${v.discussed?`<div class="meta">${esc(v.discussed)}</div>`:''}</div>`).join('')}`:''}
+   ${samples.length?`<h3>Samples received</h3>${samples.map(s=>`<div class="li">${fmtDate(s.date)} · qty ${esc(s.qty||'?')} · expiry ${s.expiry?fmtDate(s.expiry):'?'}</div>`).join('')}`:''}
+   <div class="formfoot"><button class="btn danger sm" data-act="delMed" data-id="${id}">Delete</button><span class="sp"></span>
+    <button class="btn sec sm" data-act="starMed" data-id="${id}" data-reopen="1">${m.starred?'Unstar':'★ Star'}</button>
+    <button class="btn sec sm" data-act="dupMed" data-id="${id}">Duplicate</button>
+    <button class="btn sm" data-act="editMed" data-id="${id}">Edit</button></div>`);
+}
+const compKey=m=>(m.ingredients||[]).filter(i=>i.name).map(i=>nkey(i.name)+':'+nkey(i.strength)).sort().join('|');
+function ingRow(i={}){return `<div class="ingrow"><input name="ing_name" placeholder="Ingredient, e.g. Telmisartan" value="${esc(i.name||'')}" list="dl_ings" autocomplete="off"><input name="ing_str" placeholder="e.g. 40 mg" value="${esc(i.strength||'')}"><button type="button" class="btn sec" data-act="rmRow" aria-label="Remove">✕</button></div>`}
+function medForm(id,dup,preset){
+  const m0=id?byId('medicines',id):null;
+  const m=m0?clone(m0):Object.assign({ingredients:[{}],form:'Tablet',verified:false,dateIntroduced:today()},preset||{});
+  const isEdit=!!m0&&!dup;
+  if(dup){m.brand=(m.brand||'')+' (copy)';m.verified=false;m.demo=false}
+  ui.editMed=isEdit?m0.id:null;
+  const formIsOther=m.form&&!FORMS.includes(m.form);
+  openModal(isEdit?'Edit medicine':dup?'Duplicate medicine':'Add medicine',`${datalists()}
+  <form id="mform" novalidate autocomplete="off">
+   <div class="fgrid">
+    ${fld('Brand name *',inp('brand',m.brand,'required data-inp="brandDup" placeholder="As printed on the pack"'),'full')}
+    <div id="dupWarn" class="fld full" style="display:none"></div>
+    ${fld('Generic / salt name',inp('generic',m.generic,'placeholder="e.g. Telmisartan + Amlodipine"'),'full')}
+    <div class="fld full"><span>Composition — each ingredient with its strength</span>
+      <div class="row" style="margin-bottom:6px"><input id="pasteComp" placeholder="Quick entry: Telmisartan 40 mg + Amlodipine 5 mg" style="flex:1"><button type="button" class="btn sec sm" data-act="parseComp">Fill rows</button></div>
+      <div id="ings">${(m.ingredients&&m.ingredients.length?m.ingredients:[{}]).map(ingRow).join('')}</div>
+      <div><button type="button" class="btn sec sm" data-act="addIng">＋ Add ingredient</button></div>
+      <span class="hint">Enter exactly as stated on the package insert / official product information. Do not guess.</span></div>
+    ${fld('Dosage form',sel('form',FORMS,formIsOther?'Other':m.form,undefined,'data-chg="formOther"')+`<input name="formOther" value="${esc(formIsOther?m.form:'')}" placeholder="Specify form" style="margin-top:6px;${formIsOther?'':'display:none'}">`)}
+    ${fld('Strength <span class="hint">(auto from ingredients if blank)</span>',inp('strength',m.strength,'placeholder="e.g. 40 mg / 5 mg"'))}
+    ${fld('Pack size',inp('pack',m.pack,'placeholder="e.g. 10 × 15 tablets"'))}
+    ${fld('Therapeutic category',inp('category',m.category,'list="dl_cats"'))}
+    ${fld('Common clinical indications (recorded)',area('indications',m.indications),'full')}
+    ${fld('Standard dosage (your own entry)',area('dosage',m.dosage),'full')}
+    ${fld('Pharmaceutical company',coSelect('companyId',m.companyId))}
+    ${fld('Division / business unit',inp('division',m.division,'list="dl_divs"'))}
+    ${fld('MR associated',sel('mrId',mrList(),m.mrId,'— None —'))}
+    ${fld('Date introduced / discussed',inp('dateIntroduced',m.dateIntroduced,'type="date"'))}
+    ${fld('Price (₹, optional)',inp('price',m.price,'inputmode="decimal" placeholder="MRP per pack"'))}
+    ${fld('Source of composition',sel('source',SOURCES,m.source,'— Not recorded —'))}
+    ${fld('Source details',inp('sourceDetails',m.sourceDetails,'placeholder="e.g. PI dated Mar 2026, batch…"'))}
+    <label class="fld chk full" style="background:var(--warnbg);padding:10px;border-radius:8px"><input type="checkbox" name="verified" ${m.verified?'checked':''}> I have personally verified this composition against the source recorded above (package insert / official product information).</label>
+    ${fld('Memory aid / mnemonic',area('mnemonic',m.mnemonic),'full')}
+    ${fld('Personal notes',area('notes',m.notes),'full')}
+    <label class="fld chk"><input type="checkbox" name="starred" ${m.starred?'checked':''}> ★ Star / bookmark</label>
+   </div>${formFoot()}</form>`,fd=>saveMed(fd,isEdit?m0.id:null));
+  checkBrandDup();
+}
+function checkBrandDup(){
+  const el=$('#dupWarn'),b=$('#mform [name=brand]');if(!el||!b)return;
+  const k=nkey(b.value);const d=k?db.medicines.filter(x=>x.id!==ui.editMed&&nkey(x.brand)===k):[];
+  const near=k.length>=4&&!d.length?db.medicines.filter(x=>x.id!==ui.editMed&&(nkey(x.brand).startsWith(k)||k.startsWith(nkey(x.brand))||lev(nkey(x.brand),k)<=1)).slice(0,4):[];
+  if(d.length)el.innerHTML=`<div class="alert warn" style="margin:0">⚠ A brand with this name already exists: ${d.map(x=>`<b>${esc(x.brand)}</b> (${esc(x.form||'')} · ${esc(compOrNone(x))} · ${esc(coName(x.companyId))})`).join('; ')}. Different strengths or forms may be separate entries.</div>`;
+  else if(near.length)el.innerHTML=`<div class="alert info" style="margin:0">Similar names already recorded: ${near.map(x=>`<b>${esc(x.brand)}</b> (${esc(compOrNone(x))})`).join('; ')}. Similar names do not mean the same composition.</div>`;
+  el.style.display=(d.length||near.length)?'':'none';
+}
+function parseComposition(s){
+  return String(s||'').split(/\s*(?:\+|;|\band\b|,(?!\d))\s*/i).map(p=>p.trim()).filter(Boolean).map(p=>{
+    const m=p.match(/^(.*?)[\s(]*((?:\d+(?:\.\d+)?)\s*(?:mg|mcg|µg|ug|g|gm|ml|iu|i\.u\.|%|units?|lac|lakh|million|cfu|meq)(?:\s*\/\s*[\d.]*\s*(?:ml|g|gm|dose|tab|puff|actuation|sachet|5\s*ml))?\)?)\s*$/i);
+    return m&&m[1]?{name:m[1].replace(/[\s(]+$/,'').trim(),strength:m[2].replace(/\)$/,'').trim()}:{name:p,strength:''};
+  });
+}
+function saveMed(fd,id){
+  const brand=(fd.get('brand')||'').trim();if(!brand){toast('Brand name is required',true);return false}
+  const names=fd.getAll('ing_name'),strs=fd.getAll('ing_str');
+  const ingredients=names.map((n,i)=>({name:n.trim(),strength:(strs[i]||'').trim()})).filter(x=>x.name);
+  if(strs.some((s,i)=>s.trim()&&!names[i].trim())){toast('An ingredient row has a strength but no ingredient name',true);return false}
+  const missingStr=ingredients.filter(i=>!i.strength);
+  const price=(fd.get('price')||'').trim();if(price&&isNaN(num(price))){toast('Price must be a number',true);return false}
+  let companyId=fd.get('companyId');
+  if(companyId==='__new'){const nm=(fd.get('newCompany')||'').trim();if(!nm){toast('Enter the new company name',true);return false}companyId=ensureCompany(nm).id}
+  const form=fd.get('form')==='Other'?((fd.get('formOther')||'').trim()||'Other'):fd.get('form');
+  const rec={brand,generic:(fd.get('generic')||'').trim(),ingredients,form,strength:(fd.get('strength')||'').trim()||ingredients.map(i=>i.strength).filter(Boolean).join(' / '),
+    pack:fd.get('pack').trim(),category:fd.get('category').trim(),indications:fd.get('indications').trim(),dosage:fd.get('dosage').trim(),companyId:companyId||'',division:fd.get('division').trim(),mrId:fd.get('mrId')||'',
+    dateIntroduced:fd.get('dateIntroduced')||'',price,source:fd.get('source')||'',sourceDetails:fd.get('sourceDetails').trim(),verified:fd.get('verified')==='on',mnemonic:fd.get('mnemonic').trim(),notes:fd.get('notes').trim(),starred:fd.get('starred')==='on'};
+  const same=db.medicines.filter(x=>x.id!==id&&nkey(x.brand)===nkey(brand)&&nkey(x.strength)===nkey(rec.strength)&&(x.form||'')===(rec.form||'')&&(x.companyId||'')===(rec.companyId||''));
+  if(same.length&&!confirm(`“${brand}” (${rec.form} ${rec.strength}) from the same company already exists. Save another entry anyway?`))return false;
+  if(!ingredients.length&&!confirm('No ingredients entered. The composition will show as “not recorded”. Save anyway?'))return false;
+  if(missingStr.length&&!confirm(`Strength missing for: ${missingStr.map(i=>i.name).join(', ')}. Save anyway?`))return false;
+  if(rec.verified&&!rec.source&&!confirm('You marked this as verified but did not record the source. Save anyway?'))return false;
+  let m;
+  if(id){m=byId('medicines',id);Object.assign(m,rec,{updated:nowISO()})}
+  else{m=Object.assign({id:uid('med'),created:nowISO(),updated:nowISO()},rec);db.medicines.push(m)}
+  if(m.mrId){const r=byId('mrs',m.mrId);if(r){r.brandIds=r.brandIds||[];if(!r.brandIds.includes(m.id))r.brandIds.push(m.id)}}
+  save();toast('Medicine saved');refresh();
+}
+function delMed(id){
+  const m=byId('medicines',id);if(!m)return;
+  if(!confirm(`Delete “${m.brand}”? Visit records will keep the brand name. This cannot be undone.`))return;
+  db.medicines=db.medicines.filter(x=>x.id!==id);db.mrs.forEach(r=>{r.brandIds=(r.brandIds||[]).filter(x=>x!==id)});
+  delete db.quiz['med:'+id];ui.medSel.delete(id);save();closeModal();toast('Deleted');refresh();
+}
+function showCompare(){
+  const ms=[...ui.medSel].map(id=>byId('medicines',id)).filter(Boolean);
+  if(ms.length<2){toast('Select at least two brands (tick “Compare” on the cards)',true);return}
+  const keys=[];const nameOf={};
+  ms.forEach(m=>(m.ingredients||[]).forEach(i=>{if(!i.name)return;const k=nkey(i.name);if(!nameOf[k]){nameOf[k]=i.name;keys.push(k)}}));
+  const strOf=(m,k)=>(m.ingredients||[]).filter(i=>nkey(i.name)===k).map(i=>i.strength||'?').join(', ');
+  const common=[],diff=[];
+  const ingRows=keys.map(k=>{const vals=ms.map(m=>strOf(m,k));const inAll=vals.every(Boolean);const sameStr=inAll&&uniq(vals.map(nkey)).length===1;
+    (inAll?common:diff).push(nameOf[k]+(inAll&&!sameStr?' (different strengths)':''));
+    return `<tr class="${sameStr?'same':'diff'}"><th>${esc(nameOf[k])}<br><small>${sameStr?'same in all':inAll?'in all, strengths differ':'not in all'}</small></th>${vals.map(v=>`<td>${v?esc(v):'— absent'}</td>`).join('')}</tr>`}).join('');
+  const identical=uniq(ms.map(compKey)).length===1&&compKey(ms[0]);
+  const r=(label,fn)=>{const vals=ms.map(fn);const allSame=uniq(vals.map(v=>norm(v))).length===1;return `<tr><th>${label}</th>${vals.map(v=>`<td${!allSame?' style="background:#fffaf0"':''}>${esc(v)||'<span class="muted">—</span>'}</td>`).join('')}</tr>`};
+  openModal('Compare brands',`
+   <div class="alert ${identical?'ok':'warn'}">${identical?'All selected brands have the <b>same recorded</b> ingredients and strengths.':'The selected brands <b>differ</b> in recorded composition.'} Common: <b>${esc(common.join(', ')||'none')}</b>. Differences: <b>${esc(diff.join(', ')||'none')}</b>.<br><small>Comparison uses only what you recorded. Similar brand names do not imply the same composition; confirm against the package insert.</small></div>
+   <div class="tblwrap"><table class="tbl"><thead><tr><th></th>${ms.map(m=>`<th>${esc(m.brand)}</th>`).join('')}</tr></thead><tbody>
+    ${r('Company',m=>[coName(m.companyId),m.division].filter(Boolean).join(' · '))}
+    ${r('Dosage form',m=>m.form)}${r('Strength',m=>m.strength)}${r('Pack size',m=>m.pack)}
+    <tr><th colspan="${ms.length+1}" style="background:var(--navy);color:#fff">Active ingredients</th></tr>${ingRows||`<tr><td colspan="${ms.length+1}">No ingredients recorded.</td></tr>`}
+    ${r('Generic name',m=>m.generic)}${r('Category',m=>m.category)}${r('Indications (recorded)',m=>m.indications)}
+    ${r('Price',m=>m.price?money(m.price):'')}${r('Source',m=>[m.source,m.sourceDetails].filter(Boolean).join(' — '))}
+    ${r('Verification',m=>(m.verified?'Verified':'UNVERIFIED')+(m.demo?' (demo)':''))}${r('Notes',m=>m.notes)}
+   </tbody></table></div>
+   <div class="formfoot"><button class="btn sec" data-act="clearSel">Clear selection</button><button class="btn" data-act="closeModal">Close</button></div>`,null,true);
+}
+
+/* =========================================================
+   COMPANIES
+   ========================================================= */
+function vCompanies(){
+  const list=ui.coQ.trim()?searchGen(ui.coQ,db.companies,coHay):db.companies.slice().sort(byName);
+  return `<div class="row between"><h1 style="margin:0">Companies</h1><button class="btn" data-act="addCo">＋ Add company</button></div>
+  <input type="search" placeholder="Filter companies…" value="${esc(ui.coQ)}" data-inp="coQ" style="margin:10px 0">
+  <div id="coRes" class="grid">${coCards(list)}</div>`;
+}
+function coCards(list){
+  return list.length?list.map(c=>{const nm=db.medicines.filter(m=>m.companyId===c.id).length,nr=db.mrs.filter(r=>r.companyId===c.id).length,ng=db.managers.filter(g=>g.companyId===c.id).length;
+    return `<div class="item" data-act="viewCo" data-id="${c.id}"><div class="t">${esc(c.name)} ${c.demo?'<span class="badge b-demo">DEMO</span>':''}</div><div class="meta">${esc(c.divisions||'No divisions recorded')}</div><div class="meta">${nm} brands · ${nr} MRs · ${ng} managers</div></div>`}).join(''):emptyBox('No companies recorded.');
+}
+function showCo(id){
+  const c=byId('companies',id);if(!c)return;
+  const meds=db.medicines.filter(m=>m.companyId===id).sort(byName),mrs=db.mrs.filter(r=>r.companyId===id).sort(byName);
+  const past=db.mrs.filter(r=>r.companyId!==id&&(r.companyHistory||[]).some(h=>h.companyId===id));
+  const mgrs=db.managers.filter(g=>g.companyId===id),nv=db.visits.filter(v=>v.companyId===id).length;
+  openModal(c.name,`<dl class="kv">${c.divisions?`<dt>Divisions</dt><dd>${esc(c.divisions)}</dd>`:''}${c.portfolio?`<dt>Product portfolio</dt><dd>${esc(c.portfolio)}</dd>`:''}${c.hq?`<dt>HQ / regional office</dt><dd>${esc(c.hq)}</dd>`:''}${c.notes?`<dt>Notes</dt><dd>${esc(c.notes)}</dd>`:''}<dt>Visits logged</dt><dd>${nv}</dd></dl>
+   <h3>Recorded brands (${meds.length})</h3>${meds.map(m=>`<div class="li click" data-act="viewMed" data-id="${m.id}"><b>${esc(m.brand)}</b> <small class="muted">${esc(m.division||'')}</small><br>${esc(compOrNone(m))}</div>`).join('')||'<p class="muted">None.</p>'}
+   <h3>Current MRs (${mrs.length})</h3>${mrs.map(r=>`<div class="li click" data-act="viewMr" data-id="${r.id}">${esc(r.name)} <small class="muted">${esc([r.division,r.territory].filter(Boolean).join(' · '))}</small></div>`).join('')||'<p class="muted">None.</p>'}
+   ${past.length?`<h3>Former MRs</h3>${past.map(r=>`<div class="li click" data-act="viewMr" data-id="${r.id}">${esc(r.name)} <small class="muted">now with ${esc(coName(r.companyId)||'—')}</small></div>`).join('')}`:''}
+   <h3>Managers (${mgrs.length})</h3>${mgrs.map(g=>`<div class="li click" data-act="viewMgr" data-id="${g.id}">${esc(g.name)} <small class="muted">${esc(g.designation||'')}</small></div>`).join('')||'<p class="muted">None.</p>'}
+   <div class="formfoot"><button class="btn danger sm" data-act="delCo" data-id="${id}">Delete</button><span class="sp"></span><button class="btn sec sm" data-act="medFilter" data-k="company" data-v="${id}">Show brands</button><button class="btn sec sm" data-act="dupCo" data-id="${id}">Duplicate</button><button class="btn sm" data-act="editCo" data-id="${id}">Edit</button></div>`);
+}
+function coForm(id,dup){
+  const c0=id?byId('companies',id):null;const c=c0?clone(c0):{};const isEdit=!!c0&&!dup;if(dup){c.name+=' (copy)';c.demo=false}
+  openModal(isEdit?'Edit company':'Add company',`<form id="mform" novalidate autocomplete="off"><div class="fgrid">
+   ${fld('Company name *',inp('name',c.name,'required'),'full')}
+   ${fld('Divisions <span class="hint">(comma-separated)</span>',inp('divisions',c.divisions,'placeholder="e.g. Cardio, Diabeto, Gastro"'),'full')}
+   ${fld('Product portfolio',area('portfolio',c.portfolio),'full')}
+   ${fld('Headquarters / regional office',inp('hq',c.hq),'full')}
+   ${fld('Notes',area('notes',c.notes),'full')}</div>${formFoot()}</form>`,fd=>{
+    const name=fd.get('name').trim();if(!name){toast('Company name is required',true);return false}
+    if(db.companies.some(x=>x.id!==(isEdit?id:null)&&nkey(x.name)===nkey(name))&&!confirm(`A company named “${name}” already exists. Save anyway?`))return false;
+    const rec={name,divisions:fd.get('divisions').trim(),portfolio:fd.get('portfolio').trim(),hq:fd.get('hq').trim(),notes:fd.get('notes').trim(),updated:nowISO()};
+    if(isEdit)Object.assign(c0,rec);else db.companies.push(Object.assign({id:uid('co'),created:nowISO()},rec));
+    save();toast('Company saved');refresh();});
+}
+function delCo(id){
+  const c=byId('companies',id);const nm=db.medicines.filter(m=>m.companyId===id).length,nr=db.mrs.filter(r=>r.companyId===id).length,ng=db.managers.filter(g=>g.companyId===id).length;
+  if(nm||nr||ng){alert(`“${c.name}” is linked to ${nm} medicines, ${nr} MRs and ${ng} managers. Reassign or delete those first.`);return}
+  if(!confirm(`Delete company “${c.name}”? Past visit and gift records keep the company name.`))return;
+  db.companies=db.companies.filter(x=>x.id!==id);save();closeModal();toast('Deleted');refresh();
+}
+
+/* =========================================================
+   MRs & MANAGERS
+   ========================================================= */
+function vPeople(){
+  const tab=ui.peopleTab;
+  return `<div class="row between"><h1 style="margin:0">MRs &amp; Managers</h1><div class="row"><button class="btn" data-act="addMr">＋ Add MR</button><button class="btn sec" data-act="addMgr">＋ Add manager</button></div></div>
+  <div class="tabs" style="margin-top:10px"><button class="btn sm ${tab==='mrs'?'':'sec'}" data-act="peopleTab" data-tab="mrs">Medical representatives (${db.mrs.length})</button><button class="btn sm ${tab==='managers'?'':'sec'}" data-act="peopleTab" data-tab="managers">Managers (${db.managers.length})</button></div>
+  <input type="search" placeholder="Filter by name, company, territory, brand…" value="${esc(ui.peopleQ)}" data-inp="peopleQ" style="margin-bottom:10px">
+  <div id="pplRes" class="grid">${peopleCards()}</div>`;
+}
+function peopleCards(){
+  if(ui.peopleTab==='mrs'){const l=ui.peopleQ.trim()?searchGen(ui.peopleQ,db.mrs,mrHay):db.mrs.slice().sort(byName);return l.map(mrCard).join('')||emptyBox('No MRs recorded.','<button class="btn sm" data-act="addMr">＋ Add MR</button>')}
+  const l=ui.peopleQ.trim()?searchGen(ui.peopleQ,db.managers,mgrHay):db.managers.slice().sort(byName);return l.map(mgrCard).join('')||emptyBox('No managers recorded.','<button class="btn sm" data-act="addMgr">＋ Add manager</button>');
+}
+function mrCard(r){const lv=mrLastDate(r);return `<div class="item" data-act="viewMr" data-id="${r.id}"><div class="t">${esc(r.name)} ${r.demo?'<span class="badge b-demo">DEMO</span>':''}</div><div class="meta">${esc([coName(r.companyId),r.division,r.territory].filter(Boolean).join(' · '))}</div><div class="meta">Last visit: ${lv?fmtDate(lv)+' ('+ago(lv)+')':'—'} · ${(r.brandIds||[]).length} brands</div>${r.phone?`<div style="margin-top:6px"><a class="btn sm sec" href="tel:${esc(r.phone)}" data-act="noop">📞 ${esc(r.phone)}</a></div>`:''}</div>`}
+function mgrCard(g){return `<div class="item" data-act="viewMgr" data-id="${g.id}"><div class="t">${esc(g.name)} ${g.demo?'<span class="badge b-demo">DEMO</span>':''}</div><div class="meta">${esc(g.designation||'')}</div><div class="meta">${esc([coName(g.companyId),g.division,g.territory].filter(Boolean).join(' · '))}</div><div class="meta">${(g.mrIds||[]).length} associated MRs</div>${g.phone?`<div style="margin-top:6px"><a class="btn sm sec" href="tel:${esc(g.phone)}" data-act="noop">📞 ${esc(g.phone)}</a></div>`:''}</div>`}
+function showMr(id){
+  const r=byId('mrs',id);if(!r)return;const vs=visitsOf(id);const mgrs=db.managers.filter(g=>(g.mrIds||[]).includes(id));
+  const gifts=db.gifts.filter(x=>x.mrId===id);
+  openModal(r.name,`<dl class="kv">
+    ${r.phone?`<dt>Phone</dt><dd><a href="tel:${esc(r.phone)}">${esc(r.phone)}</a></dd>`:''}
+    <dt>Company</dt><dd>${r.companyId?`<a href="#" data-act="viewCo" data-id="${r.companyId}">${esc(coName(r.companyId))}</a>`:'—'}${r.companySince?` <small class="muted">since ${fmtDate(r.companySince)}</small>`:''}</dd>
+    ${r.division?`<dt>Division</dt><dd>${esc(r.division)}</dd>`:''}${r.territory?`<dt>Territory</dt><dd>${esc(r.territory)}</dd>`:''}
+    ${r.firstVisit?`<dt>First visit</dt><dd>${fmtDate(r.firstVisit)}</dd>`:''}<dt>Last visit</dt><dd>${mrLastDate(r)?fmtDate(mrLastDate(r))+' ('+ago(mrLastDate(r))+')':'—'}</dd>
+    ${r.frequency?`<dt>Visit frequency</dt><dd>${esc(r.frequency)}</dd>`:''}
+    ${mgrs.length?`<dt>Manager(s)</dt><dd>${mgrs.map(g=>`<a href="#" data-act="viewMgr" data-id="${g.id}">${esc(g.name)}</a>`).join(', ')}</dd>`:''}
+    ${(r.companyHistory||[]).length?`<dt>Company history</dt><dd>${r.companyHistory.map(h=>`${esc(h.companyName||coName(h.companyId))}${h.division?' ('+esc(h.division)+')':''}: ${h.from?fmtDate(h.from):'?'} → ${fmtDate(h.to)}`).join('<br>')}</dd>`:''}
+    ${r.notes?`<dt>Notes</dt><dd>${esc(r.notes)}</dd>`:''}
+    <dt>Gift / honorarium records</dt><dd>${gifts.length} <a href="#" data-act="giftsForMr" data-id="${id}">view</a></dd></dl>
+   <h3>Brands promoted</h3>${(r.brandIds||[]).filter(x=>byId('medicines',x)).map(x=>{const m=byId('medicines',x);return `<button class="chip" data-act="viewMed" data-id="${x}"><b>${esc(m.brand)}</b>&nbsp;${esc(compOrNone(m))}</button>`}).join('')||'<span class="muted">—</span>'}
+   <h3>Visit history (${vs.length})</h3><div class="timeline">${vs.map((v,i)=>`<div class="li click ${i===0?'latest':''}" data-act="viewVisit" data-id="${v.id}">${i===0?'<span class="badge b-info">Latest</span> ':''}<b>${fmtDT(v.datetime)}</b> <small class="muted">${esc(coLabel(v))}</small>
+     ${(v.brandIds||[]).length?`<div class="meta">Brands: ${(v.brandIds||[]).map((b,j)=>esc(medLabel(b,j,v))).join(', ')}</div>`:''}${v.discussed?`<div class="meta">${esc(v.discussed)}</div>`:''}${v.notes?`<div class="meta">Notes: ${esc(v.notes)}</div>`:''}${v.followUp?`<div class="meta">Follow-up: ${esc(v.followUp)}</div>`:''}</div>`).join('')||'<p class="muted">No visits logged.</p>'}</div>
+   <div class="formfoot"><button class="btn danger sm" data-act="delMr" data-id="${id}">Delete</button><span class="sp"></span><button class="btn sec sm" data-act="dupMr" data-id="${id}">Duplicate</button><button class="btn sec sm" data-act="editMr" data-id="${id}">Edit</button><button class="btn sm" data-act="addVisit" data-mr="${id}">＋ Log visit</button></div>`);
+}
+function mrForm(id,dup){
+  const r0=id?byId('mrs',id):null;const r=r0?clone(r0):{brandIds:[],firstVisit:today()};const isEdit=!!r0&&!dup;if(dup){r.name+=' (copy)';r.demo=false;r.companyHistory=[]}
+  openModal(isEdit?'Edit MR':'Add MR',`${datalists()}<form id="mform" novalidate autocomplete="off"><div class="fgrid">
+   ${fld('Full name *',inp('name',r.name,'required'),'full')}
+   ${fld('Phone number',inp('phone',r.phone,'type="tel" inputmode="tel" placeholder="10-digit mobile"'))}
+   ${fld('Company',coSelect('companyId',r.companyId))}
+   ${fld('Division',inp('division',r.division,'list="dl_divs"'))}
+   ${fld('Territory / area',inp('territory',r.territory,'list="dl_terr"'))}
+   ${fld('Date of first visit',inp('firstVisit',r.firstVisit,'type="date"'))}
+   ${fld('Last visit date <span class="hint">(auto from visit log; use only if not logged)</span>',inp('lastVisitManual',r.lastVisitManual,'type="date"'))}
+   ${fld('Visit frequency',sel('frequency',FREQS,r.frequency,'—'))}
+   ${isEdit&&r0.companyId?`<div class="fld full"><span class="hint">If you change the company, the previous company is kept in this MR's company history and all past visits keep their original company.</span></div>`:''}
+   <div class="fld full"><span>Brands promoted</span>${msel('brandIds',medItems(),r.brandIds,'Filter brands…')}</div>
+   ${fld('Notes',area('notes',r.notes),'full')}</div>${formFoot()}</form>`,fd=>{
+    const name=fd.get('name').trim();if(!name){toast('Name is required',true);return false}
+    const phone=fd.get('phone').trim();const digits=phone.replace(/\D/g,'');
+    if(phone&&(digits.length<10||digits.length>13)&&!confirm('The phone number looks unusual. Save anyway?'))return false;
+    let companyId=fd.get('companyId');if(companyId==='__new'){const nm=(fd.get('newCompany')||'').trim();if(!nm){toast('Enter the new company name',true);return false}companyId=ensureCompany(nm).id}
+    if(db.mrs.some(x=>x.id!==(isEdit?id:null)&&nkey(x.name)===nkey(name)&&(x.companyId||'')===(companyId||''))&&!confirm(`An MR named “${name}” at this company already exists. Save anyway?`))return false;
+    const rec={name,phone,companyId:companyId||'',division:fd.get('division').trim(),territory:fd.get('territory').trim(),firstVisit:fd.get('firstVisit'),lastVisitManual:fd.get('lastVisitManual'),frequency:fd.get('frequency'),brandIds:fd.getAll('brandIds'),notes:fd.get('notes').trim(),updated:nowISO()};
+    if(isEdit){
+      if((r0.companyId||'')!==(rec.companyId||'')&&r0.companyId){r0.companyHistory=r0.companyHistory||[];r0.companyHistory.push({companyId:r0.companyId,companyName:coName(r0.companyId),division:r0.division||'',from:r0.companySince||r0.firstVisit||'',to:today()});rec.companySince=today();toast('Company change recorded in history')}
+      Object.assign(r0,rec);
+    }else db.mrs.push(Object.assign({id:uid('mr'),created:nowISO(),companyHistory:[],companySince:rec.firstVisit||today()},rec));
+    save();toast('MR saved');refresh();});
+}
+function delMr(id){const r=byId('mrs',id);if(!confirm(`Delete MR “${r.name}”? Visit and gift records are kept with the MR's name.`))return;
+  db.mrs=db.mrs.filter(x=>x.id!==id);db.managers.forEach(g=>{g.mrIds=(g.mrIds||[]).filter(x=>x!==id)});db.medicines.forEach(m=>{if(m.mrId===id)m.mrId=''});if(ui.briefMr===id)ui.briefMr='';save();closeModal();toast('Deleted');refresh()}
+function showMgr(id){
+  const g=byId('managers',id);if(!g)return;
+  openModal(g.name,`<dl class="kv"><dt>Designation</dt><dd>${esc(g.designation||'—')}</dd><dt>Company</dt><dd>${esc(coName(g.companyId)||'—')}</dd>${g.division?`<dt>Division</dt><dd>${esc(g.division)}</dd>`:''}${g.territory?`<dt>Territory</dt><dd>${esc(g.territory)}</dd>`:''}${g.phone?`<dt>Phone</dt><dd><a href="tel:${esc(g.phone)}">${esc(g.phone)}</a></dd>`:''}${g.notes?`<dt>Notes</dt><dd>${esc(g.notes)}</dd>`:''}</dl>
+   <h3>Associated MRs</h3>${(g.mrIds||[]).map(x=>byId('mrs',x)).filter(Boolean).map(r=>`<div class="li click" data-act="viewMr" data-id="${r.id}">${esc(r.name)} <small class="muted">${esc(coName(r.companyId))}</small></div>`).join('')||'<p class="muted">None.</p>'}
+   <div class="formfoot"><button class="btn danger sm" data-act="delMgr" data-id="${id}">Delete</button><span class="sp"></span><button class="btn sec sm" data-act="dupMgr" data-id="${id}">Duplicate</button><button class="btn sm" data-act="editMgr" data-id="${id}">Edit</button></div>`);
+}
+function mgrForm(id,dup){
+  const g0=id?byId('managers',id):null;const g=g0?clone(g0):{mrIds:[]};const isEdit=!!g0&&!dup;if(dup){g.name+=' (copy)';g.demo=false}
+  const desOther=g.designation&&!DESIGNATIONS.includes(g.designation);
+  openModal(isEdit?'Edit manager':'Add manager',`${datalists()}<form id="mform" novalidate autocomplete="off"><div class="fgrid">
+   ${fld('Full name *',inp('name',g.name,'required'),'full')}
+   ${fld('Designation',sel('designation',DESIGNATIONS,desOther?'Other':g.designation,'—','data-chg="formOther"')+`<input name="formOther" value="${esc(desOther?g.designation:'')}" placeholder="Specify designation" style="margin-top:6px;${desOther?'':'display:none'}">`)}
+   ${fld('Company',coSelect('companyId',g.companyId))}
+   ${fld('Division',inp('division',g.division,'list="dl_divs"'))}
+   ${fld('Territory',inp('territory',g.territory,'list="dl_terr"'))}
+   ${fld('Phone number',inp('phone',g.phone,'type="tel" inputmode="tel"'))}
+   <div class="fld full"><span>Associated MRs</span>${msel('mrIds',db.mrs.slice().sort(byName).map(r=>({id:r.id,label:r.name,sub:coName(r.companyId)})),g.mrIds,'Filter MRs…')}</div>
+   ${fld('Notes',area('notes',g.notes),'full')}</div>${formFoot()}</form>`,fd=>{
+    const name=fd.get('name').trim();if(!name){toast('Name is required',true);return false}
+    let companyId=fd.get('companyId');if(companyId==='__new'){const nm=(fd.get('newCompany')||'').trim();if(!nm){toast('Enter the new company name',true);return false}companyId=ensureCompany(nm).id}
+    const rec={name,designation:fd.get('designation')==='Other'?(fd.get('formOther').trim()||'Other'):fd.get('designation'),companyId:companyId||'',division:fd.get('division').trim(),territory:fd.get('territory').trim(),phone:fd.get('phone').trim(),mrIds:fd.getAll('mrIds'),notes:fd.get('notes').trim(),updated:nowISO()};
+    if(isEdit)Object.assign(g0,rec);else db.managers.push(Object.assign({id:uid('mgr'),created:nowISO()},rec));
+    save();toast('Manager saved');refresh();});
+}
+function delMgr(id){const g=byId('managers',id);if(!confirm(`Delete manager “${g.name}”?`))return;db.managers=db.managers.filter(x=>x.id!==id);save();closeModal();toast('Deleted');refresh()}
+
+/* =========================================================
+   VISITS
+   ========================================================= */
+function vVisits(){
+  const f=ui.visF;
+  return `<div class="row between"><h1 style="margin:0">Visit history</h1><button class="btn" data-act="addVisit">＋ Add MR visit</button></div>
+  <input type="search" placeholder="Search notes, brands discussed, follow-ups…" value="${esc(f.q)}" data-inp="visQ" style="margin:10px 0 8px">
+  <div class="filters"><select data-chg="visF" data-k="mr">${opts(mrList(),f.mr,'All MRs')}</select><select data-chg="visF" data-k="company">${opts(coList(),f.company,'All companies')}</select>
+   <label class="fld"><span>From</span><input type="date" value="${esc(f.from)}" data-chg="visF" data-k="from"></label><label class="fld"><span>To</span><input type="date" value="${esc(f.to)}" data-chg="visF" data-k="to"></label></div>
+  <div id="visRes">${visitList()}</div>`;
+}
+function visitList(){
+  const f=ui.visF;const tk=tokens(f.q);
+  const list=db.visits.filter(v=>(!f.mr||v.mrId===f.mr)&&(!f.company||v.companyId===f.company)&&(!f.from||v.datetime.slice(0,10)>=f.from)&&(!f.to||v.datetime.slice(0,10)<=f.to)&&
+    (!tk.length||scoreText(tk,[mrLabel(v),coLabel(v),v.division,(v.brandIds||[]).map((b,i)=>medLabel(b,i,v)).join(' '),v.discussed,v.followUp,v.notes,(v.samples||[]).map(s=>s.name).join(' ')].join(' | '))))
+    .sort((a,b)=>b.datetime.localeCompare(a.datetime));
+  if(!list.length)return emptyBox(db.visits.length?'No visits match.':'No visits logged yet.','<button class="btn sm" data-act="addVisit">＋ Add MR visit</button>');
+  let h=`<p class="hint">${list.length} visits</p><div class="card">`,month='';
+  list.forEach(v=>{const mo=v.datetime.slice(0,7);if(mo!==month){month=mo;h+=`<h3>${parseD(mo+'-01').toLocaleDateString('en-IN',{month:'long',year:'numeric'})}</h3>`}h+=visitLine(v)});
+  return h+'</div>';
+}
+function showVisit(id){
+  const v=byId('visits',id);if(!v)return;
+  openModal('Visit – '+mrLabel(v),`<dl class="kv"><dt>Date &amp; time</dt><dd>${fmtDT(v.datetime)}</dd><dt>MR</dt><dd>${byId('mrs',v.mrId)?`<a href="#" data-act="viewMr" data-id="${v.mrId}">${esc(mrLabel(v))}</a>`:esc(mrLabel(v))}</dd>
+   <dt>Company (at visit)</dt><dd>${esc(coLabel(v)||'—')}${v.division?' · '+esc(v.division):''}</dd>
+   <dt>Brands discussed</dt><dd>${(v.brandIds||[]).map((b,i)=>byId('medicines',b)?`<a href="#" data-act="viewMed" data-id="${b}">${esc(medLabel(b,i,v))}</a>`:esc(medLabel(b,i,v))).join(', ')||'—'}</dd>
+   ${v.discussed?`<dt>Composition / clinical info discussed</dt><dd>${esc(v.discussed)}</dd>`:''}
+   ${(v.samples||[]).length?`<dt>Samples</dt><dd>${v.samples.map(s=>esc((byId('medicines',s.medId)?.brand||s.name||'?')+' — qty '+(s.qty||'?')+', expiry '+(s.expiry?fmtDate(s.expiry):'?'))).join('<br>')}</dd>`:''}
+   ${v.followUp?`<dt>Follow-up requested</dt><dd>${esc(v.followUp)}</dd>`:''}${v.nextVisit?`<dt>Next expected visit</dt><dd>${fmtDate(v.nextVisit)}</dd>`:''}${v.notes?`<dt>Notes</dt><dd>${esc(v.notes)}</dd>`:''}</dl>
+   <div class="formfoot"><button class="btn danger sm" data-act="delVisit" data-id="${id}">Delete</button><span class="sp"></span><button class="btn sec sm" data-act="dupVisit" data-id="${id}">Duplicate</button><button class="btn sm" data-act="editVisit" data-id="${id}">Edit</button></div>`);
+}
+function sampRow(s={}){return `<div class="samprow"><select name="s_med">${opts(medList(),s.medId,s.name&&!s.medId?s.name+' (not in list)':'Select brand…')}</select><input name="s_qty" placeholder="Qty" value="${esc(s.qty||'')}"><input class="exp" name="s_exp" type="date" value="${esc(s.expiry||'')}" title="Expiry date"><button type="button" class="btn sec" data-act="rmRow" aria-label="Remove">✕</button><input type="hidden" name="s_name" value="${esc(s.medId?'':s.name||'')}"></div>`}
+function visitForm(id,dup,mrId){
+  const v0=id?byId('visits',id):null;const isEdit=!!v0&&!dup;
+  const v=v0?clone(v0):{datetime:nowLocal(),mrId:mrId||'',brandIds:[],samples:[]};
+  if(dup){v.datetime=nowLocal();v.demo=false}
+  if(!v0&&mrId){const r=byId('mrs',mrId);if(r){v.companyId=r.companyId;v.division=r.division}}
+  if(!db.mrs.length){if(confirm('No MRs recorded yet. Add an MR first?'))mrForm();return}
+  const r=byId('mrs',v.mrId);const promoted=new Set(r?.brandIds||[]);
+  const items=medItems().sort((a,b)=>promoted.has(b.id)-promoted.has(a.id));
+  openModal(isEdit?'Edit visit':'Log MR visit',`<form id="mform" novalidate autocomplete="off"><div class="fgrid">
+   ${fld('Date &amp; time',inp('datetime',v.datetime,'type="datetime-local" required'))}
+   ${fld('MR *',sel('mrId',mrList(),v.mrId,'Select MR…','data-chg="visitMr" required'))}
+   ${fld('Company (at time of visit)',sel('companyId',coList(),v.companyId,'—'))}
+   ${fld('Division',inp('division',v.division))}
+   <div class="fld full"><span>Brands discussed <span class="hint">(MR's promoted brands listed first)</span></span>${msel('brandIds',items,v.brandIds,'Filter brands…')}</div>
+   <label class="fld chk full"><input type="checkbox" name="addPromoted" checked> Add these brands to the MR's “brands promoted” list</label>
+   ${fld('Composition / clinical information discussed',area('discussed',v.discussed),'full')}
+   <div class="fld full"><span>Samples received</span><div id="samps">${(v.samples||[]).map(sampRow).join('')}</div><div><button type="button" class="btn sec sm" data-act="addSamp">＋ Add sample</button></div></div>
+   ${fld('Follow-up requested',inp('followUp',v.followUp,'placeholder="e.g. bring PI for new strength"'),'full')}
+   ${fld('Next expected visit',inp('nextVisit',v.nextVisit,'type="date"'))}
+   ${fld('Notes',area('notes',v.notes),'full')}</div>${formFoot()}</form>`,fd=>{
+    const mr=byId('mrs',fd.get('mrId'));if(!mr){toast('Select the MR',true);return false}
+    const dt=fd.get('datetime');if(!parseD(dt)){toast('Enter a valid date and time',true);return false}
+    const brandIds=fd.getAll('brandIds');
+    const sm=fd.getAll('s_med'),sq=fd.getAll('s_qty'),se=fd.getAll('s_exp'),sn=fd.getAll('s_name');
+    const samples=sm.map((m,i)=>({medId:m||'',name:m?byId('medicines',m)?.brand||'':sn[i]||'',qty:sq[i].trim(),expiry:se[i]})).filter(s=>s.medId||s.name);
+    if(samples.some(s=>s.expiry&&s.expiry<dt.slice(0,10)))if(!confirm('A sample expiry date is before the visit date (already expired). Save anyway?'))return false;
+    const nv=fd.get('nextVisit');if(nv&&nv<dt.slice(0,10)&&!confirm('Next expected visit is before this visit. Save anyway?'))return false;
+    const companyId=fd.get('companyId')||'';
+    const rec={datetime:dt,mrId:mr.id,mrName:mr.name,companyId,companyName:coName(companyId),division:fd.get('division').trim(),brandIds,brandNames:brandIds.map(b=>byId('medicines',b)?.brand||''),discussed:fd.get('discussed').trim(),samples,followUp:fd.get('followUp').trim(),nextVisit:nv,notes:fd.get('notes').trim(),updated:nowISO()};
+    if(isEdit)Object.assign(v0,rec);else db.visits.push(Object.assign({id:uid('vis'),created:nowISO()},rec));
+    if(fd.get('addPromoted')==='on'){mr.brandIds=uniq([...(mr.brandIds||[]),...brandIds])}
+    if(!mr.firstVisit||dt.slice(0,10)<mr.firstVisit)mr.firstVisit=dt.slice(0,10);
+    save();toast('Visit saved');refresh();});
+}
+function delVisit(id){if(!confirm('Delete this visit record?'))return;db.visits=db.visits.filter(x=>x.id!==id);save();closeModal();toast('Deleted');refresh()}
+
+/* =========================================================
+   GIFTS & HONORARIUM
+   ========================================================= */
+const COMPLIANCE_TEXT=`<div class="alert bad"><b>Compliance notice.</b> Recording an item here does <b>not</b> mean it is permissible. Each gift, hospitality, travel support, fee or payment must be reviewed by you against the applicable <b>NMC professional-conduct regulations</b>, the <b>Uniform Code for Pharmaceutical Marketing Practices (UCPMP)</b>, your institution's rules and the company's policy — check the current versions. Record the true nature, value and purpose of every interaction. This register is for transparent record-keeping only.</div>`;
+function giftFiltered(){const f=ui.giftF;const tk=tokens(f.q);return db.gifts.filter(g=>(!f.status||g.status===f.status)&&(!f.category||g.category===f.category)&&(!f.company||g.companyId===f.company)&&(!f.mr||g.mrId===f.mr)&&(!f.year||(g.date||'').slice(0,4)===f.year)&&(!tk.length||scoreText(tk,[g.description,mrLabel(g),coLabel(g),g.category,g.purpose,g.event,g.notes,g.documentation,g.status].join(' | ')))).sort((a,b)=>(b.date||'').localeCompare(a.date||''))}
+const gOffered=g=>num(g.amountOffered)||num(g.value);
+const gReceived=g=>g.status==='received'?(num(g.amountReceived)||num(g.value)):0;
+function vGifts(){
+  const f=ui.giftF;const years=uniq(db.gifts.map(g=>(g.date||'').slice(0,4)).filter(Boolean)).sort().reverse();
+  return `<div class="row between"><h1 style="margin:0">Gifts &amp; honorarium register</h1><button class="btn" data-act="addGift">＋ Add record</button></div><div style="height:10px"></div>
+  ${COMPLIANCE_TEXT}
+  <input type="search" placeholder="Search description, purpose, event, notes…" value="${esc(f.q)}" data-inp="giftQ" style="margin-bottom:8px">
+  <div class="filters"><select data-chg="giftF" data-k="status">${opts(GIFT_STATUS.map(s=>[s,s[0].toUpperCase()+s.slice(1)]),f.status,'All statuses')}</select><select data-chg="giftF" data-k="category">${opts(GIFT_CATS,f.category,'All categories')}</select>
+   <select data-chg="giftF" data-k="company">${opts(coList(),f.company,'All companies')}</select><select data-chg="giftF" data-k="mr">${opts(mrList(),f.mr,'All MRs')}</select><select data-chg="giftF" data-k="year">${opts(years,f.year,'All years')}</select></div>
+  <div id="giftRes">${giftResults()}</div>`;
+}
+function giftResults(){
+  const list=giftFiltered(),f=ui.giftF;
+  const totOff=list.reduce((s,g)=>s+gOffered(g),0),totRec=list.reduce((s,g)=>s+gReceived(g),0);
+  const totDec=list.filter(g=>g.status==='declined'||g.status==='returned').reduce((s,g)=>s+Math.max(gOffered(g),num(g.amountReceived)),0);
+  const unrev=list.filter(g=>!g.reviewStatus||g.reviewStatus==='Not yet reviewed').length;
+  const keyFns={month:g=>(g.date||'').slice(0,7)||'(no date)',year:g=>(g.date||'').slice(0,4)||'(no date)',company:g=>coLabel(g)||'(none)',mr:g=>mrLabel(g),category:g=>g.category||'(none)'};
+  const grp={};list.forEach(g=>{const k=keyFns[f.by](g);const o=grp[k]||(grp[k]={n:0,off:0,rec:0,dec:0,pen:0});o.n++;o.off+=gOffered(g);o.rec+=gReceived(g);if(g.status==='declined'||g.status==='returned')o.dec+=Math.max(gOffered(g),num(g.amountReceived));if(g.status==='pending'||g.status==='offered')o.pen+=gOffered(g)});
+  const keys=Object.keys(grp).sort();if(f.by==='month'||f.by==='year')keys.reverse();
+  const lab=k=>f.by==='month'&&/^\d{4}-\d{2}$/.test(k)?parseD(k+'-01').toLocaleDateString('en-IN',{month:'short',year:'numeric'}):k;
+  return `<div class="stats"><div class="stat"><b>${list.length}</b><span>Records</span></div><div class="stat"><b>${money(totOff)}</b><span>Total offered</span></div><div class="stat"><b>${money(totRec)}</b><span>Actually received</span></div><div class="stat"><b>${money(totDec)}</b><span>Declined / returned</span></div><div class="stat"><b>${unrev}</b><span>Not yet reviewed</span></div></div>
+  <div class="card"><div class="row between"><h2 style="margin:0">Totals</h2><select data-chg="giftBy" style="max-width:200px">${opts([['month','By month'],['year','By year'],['company','By company'],['mr','By MR'],['category','By category']],f.by)}</select></div>
+   <div class="tblwrap" style="margin-top:8px"><table class="tbl"><thead><tr><th>${{month:'Month',year:'Year',company:'Company',mr:'MR',category:'Category'}[f.by]}</th><th class="n">Records</th><th class="n">Offered</th><th class="n">Received</th><th class="n">Declined / returned</th><th class="n">Offered / pending</th></tr></thead>
+   <tbody>${keys.map(k=>`<tr><td>${esc(lab(k))}</td><td class="n">${grp[k].n}</td><td class="n">${money(grp[k].off)}</td><td class="n">${money(grp[k].rec)}</td><td class="n">${money(grp[k].dec)}</td><td class="n">${money(grp[k].pen)}</td></tr>`).join('')||'<tr><td colspan="6" class="muted">No records.</td></tr>'}</tbody></table></div>
+   <p class="hint">“Offered” = amount offered (or estimated value). “Received” counts only records with status <i>received</i>.</p></div>
+  <h2>Records</h2>${list.length?`<div class="list">${list.map(g=>`<div class="item" data-act="viewGift" data-id="${g.id}"><div class="t" style="font-size:16px">${esc(g.description||'(no description)')} ${g.demo?'<span class="badge b-demo">DEMO</span>':''}</div>
+   <div class="meta">${fmtDate(g.date)} · ${esc(mrLabel(g))} · ${esc(coLabel(g))} · ${esc(g.category||'')}</div>
+   <div class="row" style="margin-top:4px"><span class="badge ${g.status==='received'?'b-info':g.status==='declined'||g.status==='returned'?'b-ver':'b-unv'}">${esc(g.status)}</span>${gOffered(g)?`<span class="badge b-info">offered ${money(gOffered(g))}</span>`:''}${gReceived(g)?`<span class="badge b-info">received ${money(gReceived(g))}</span>`:''}<span class="badge ${g.reviewStatus&&g.reviewStatus!=='Not yet reviewed'?'b-ver':'b-bad'}">${esc(g.reviewStatus||'Not yet reviewed')}</span></div></div>`).join('')}</div>`:emptyBox('No records.')}`;
+}
+function showGift(id){
+  const g=byId('gifts',id);if(!g)return;const row=(k,v)=>v?`<dt>${k}</dt><dd>${v}</dd>`:'';
+  openModal('Gift / honorarium record',`${COMPLIANCE_TEXT}<dl class="kv">${row('Date',fmtDate(g.date))}${row('MR',esc(mrLabel(g)))}${row('Company',esc(coLabel(g)))}${row('Description',esc(g.description))}${row('Category',esc(g.category))}${row('Status',esc(g.status))}
+   ${row('Estimated value',g.value?money(g.value):'')}${row('Amount offered',g.amountOffered?money(g.amountOffered):'')}${row('Amount received',g.amountReceived?money(g.amountReceived):'')}
+   ${row('Purpose',esc(g.purpose))}${row('Supporting documentation',esc(g.documentation))}${row('Associated event / service',esc(g.event))}
+   ${row('Compliance review',esc(g.reviewStatus||'Not yet reviewed'))}${row('Review notes (rules / policies checked)',esc(g.reviewNotes))}${row('Review date',fmtDate(g.reviewDate))}${row('Notes',esc(g.notes))}${row('Last updated',fmtDT(g.updated))}</dl>
+   <div class="formfoot"><button class="btn danger sm" data-act="delGift" data-id="${id}">Delete</button><span class="sp"></span><button class="btn sec sm" data-act="dupGift" data-id="${id}">Duplicate</button><button class="btn sm" data-act="editGift" data-id="${id}">Edit</button></div>`);
+}
+function giftForm(id,dup){
+  const g0=id?byId('gifts',id):null;const isEdit=!!g0&&!dup;const g=g0?clone(g0):{date:today(),status:'offered',reviewStatus:'Not yet reviewed'};if(dup){g.demo=false;g.date=today()}
+  openModal(isEdit?'Edit gift / honorarium record':'Add gift / honorarium record',`${COMPLIANCE_TEXT}<form id="mform" novalidate autocomplete="off"><div class="fgrid">
+   ${fld('Date *',inp('date',g.date,'type="date" required'))}
+   ${fld('MR',sel('mrId',mrList(),g.mrId,'— None / not via MR —','data-chg="giftMr"'))}
+   ${fld('Company',sel('companyId',coList(),g.companyId,'—'))}
+   ${fld('Category *',sel('category',GIFT_CATS,g.category,'Select…','required'))}
+   ${fld('Item or payment description *',inp('description',g.description,'required placeholder="State exactly what was offered"'),'full')}
+   ${fld('Estimated monetary value (₹)',inp('value',g.value,'inputmode="decimal"'))}
+   ${fld('Amount offered (₹)',inp('amountOffered',g.amountOffered,'inputmode="decimal"'))}
+   ${fld('Amount actually received (₹)',inp('amountReceived',g.amountReceived,'inputmode="decimal"'))}
+   ${fld('Status *',sel('status',GIFT_STATUS.map(s=>[s,s[0].toUpperCase()+s.slice(1)]),g.status))}
+   ${fld('Purpose',area('purpose',g.purpose),'full')}
+   ${fld('Supporting documentation <span class="hint">(invoice, agreement, letter, receipt reference)</span>',area('documentation',g.documentation),'full')}
+   ${fld('Associated event or service',inp('event',g.event),'full')}
+   ${fld('Compliance review status',sel('reviewStatus',REVIEW_STATUS,g.reviewStatus))}
+   ${fld('Review date',inp('reviewDate',g.reviewDate,'type="date"'))}
+   ${fld('Rules / policies reviewed &amp; conclusion',area('reviewNotes',g.reviewNotes,'placeholder="e.g. Checked NMC regulations (version/date), UCPMP clause, company policy…"'),'full')}
+   ${fld('Notes',area('notes',g.notes),'full')}</div>${formFoot()}</form>`,fd=>{
+    const date=fd.get('date'),desc=fd.get('description').trim(),cat=fd.get('category');
+    if(!date||!desc||!cat){toast('Date, category and description are required',true);return false}
+    for(const k of ['value','amountOffered','amountReceived']){const v=fd.get(k).trim();if(v&&isNaN(num(v))){toast('Amounts must be numbers',true);return false}}
+    const st=fd.get('status');if(st==='received'&&!fd.get('amountReceived').trim()&&!fd.get('value').trim()&&['Hospitality','Travel support','Speaker fee','Consultancy fee','Research payment'].includes(cat)&&!confirm('Status is “received” but no amount/value is entered. Save anyway?'))return false;
+    const mrId=fd.get('mrId'),companyId=fd.get('companyId')||'';
+    const rec={date,mrId,mrName:byId('mrs',mrId)?.name||'',companyId,companyName:coName(companyId),description:desc,category:cat,value:fd.get('value').trim(),amountOffered:fd.get('amountOffered').trim(),amountReceived:fd.get('amountReceived').trim(),status:st,purpose:fd.get('purpose').trim(),documentation:fd.get('documentation').trim(),event:fd.get('event').trim(),reviewStatus:fd.get('reviewStatus'),reviewDate:fd.get('reviewDate'),reviewNotes:fd.get('reviewNotes').trim(),notes:fd.get('notes').trim(),updated:nowISO()};
+    if(isEdit)Object.assign(g0,rec);else db.gifts.push(Object.assign({id:uid('gift'),created:nowISO()},rec));
+    save();toast('Record saved');refresh();});
+}
+function delGift(id){if(!confirm('Delete this gift / honorarium record? Consider editing its status instead, to keep a complete history.'))return;db.gifts=db.gifts.filter(x=>x.id!==id);save();closeModal();toast('Deleted');refresh()}
+
+/* =========================================================
+   QUIZ & FLASHCARDS
+   ========================================================= */
+const INTERVALS=[0,1,3,7,14,30];
+const qrec=k=>db.quiz[k]||{c:0,w:0,box:0};
+function quizRecord(k,ok){const q=Object.assign({c:0,w:0,box:0},db.quiz[k]);if(ok){q.c++;q.box=Math.min(q.box+1,5)}else{q.w++;q.box=0;q.lastWrong=today()}q.lastSeen=today();q.due=addDays(today(),INTERVALS[q.box]);db.quiz[k]=q;save()}
+const quizzable=()=>db.medicines.filter(m=>(m.ingredients||[]).some(i=>i.name));
+function priority(m){const q=qrec('med:'+m.id);let p=1+q.w*2-q.c*0.5;if(!q.lastSeen)p+=1.5;if(q.due&&q.due<=today())p+=2;if(q.lastWrong&&daysBetween(q.lastWrong,today())<=7)p+=2;if((m.ingredients||[]).length>1)p+=0.7;if(m.starred)p+=0.5;return Math.max(p,0.2)}
+function dailyList(){return quizzable().filter(m=>{const q=qrec('med:'+m.id);return !q.due||q.due<=today()||q.lastSeen===today()}).sort((a,b)=>priority(b)-priority(a)).slice(0,10)}
+function forgottenList(){return quizzable().filter(m=>{const q=qrec('med:'+m.id);return q.lastWrong&&daysBetween(q.lastWrong,today())<=30&&q.box<3}).sort((a,b)=>qrec('med:'+b.id).lastWrong.localeCompare(qrec('med:'+a.id).lastWrong))}
+function weightedPick(arr,n,wfn){const pool=arr.map(x=>({x,w:wfn(x)}));const out=[];while(out.length<n&&pool.length){const tot=pool.reduce((s,p)=>s+p.w,0);let r=Math.random()*tot,i=0;for(;i<pool.length-1;i++){r-=pool[i].w;if(r<=0)break}out.push(pool.splice(i,1)[0].x)}return out}
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+function scopeMeds(scope,val){
+  let l=quizzable();
+  if(scope==='starred')l=l.filter(m=>m.starred);else if(scope==='daily'){const d=dailyList();l=d.filter(m=>qrec('med:'+m.id).lastSeen!==today());if(!l.length)l=d}else if(scope==='forgotten')l=forgottenList();
+  else if(scope==='wrong')l=l.filter(m=>qrec('med:'+m.id).w>0);
+  else if(scope==='company')l=l.filter(m=>m.companyId===val);else if(scope==='category')l=l.filter(m=>m.category===val);
+  else if(scope==='ingredient')l=l.filter(m=>(m.ingredients||[]).some(i=>nkey(i.name)===val));else if(scope==='combo')l=l.filter(m=>(m.ingredients||[]).filter(i=>i.name).length>1);
+  return l;
+}
+function buildQuiz(cfg){
+  const n=cfg.n;let items=[];
+  if(cfg.dir==='b2c'||cfg.dir==='c2b'){
+    const pool=scopeMeds(cfg.scope,cfg.val);
+    const picked=cfg.scope==='daily'?pool.slice(0,n):weightedPick(pool,n,priority);
+    items=picked.map(m=>{
+      const comp=compStr(m);const sameBrands=db.medicines.filter(x=>compKey(x)===compKey(m));
+      const shared=x=>(x.ingredients||[]).some(i=>(m.ingredients||[]).some(j=>nkey(j.name)===nkey(i.name)));
+      if(cfg.dir==='b2c'){
+        const others=uniq(quizzable().filter(x=>compKey(x)!==compKey(m)).sort((a,b)=>shared(b)-shared(a)||Math.random()-.5).map(compStr)).slice(0,3);
+        return {key:'med:'+m.id,medId:m.id,prompt:esc(m.brand),sub:esc([m.form,coName(m.companyId)].filter(Boolean).join(' · '))+(m.verified?'':' · <span class="badge b-unv">unverified entry</span>'),q:'What is the composition?',
+          answer:`<b>${esc(comp)}</b>${m.generic?`<div class="muted">${esc(m.generic)}</div>`:''}${m.mnemonic?`<div class="meta">💡 ${esc(m.mnemonic)}</div>`:''}`,correct:comp,options:others.length?shuffle([comp,...others]):null};
+      }
+      const correct=m.brand;const others=uniq(quizzable().filter(x=>compKey(x)!==compKey(m)).sort((a,b)=>shared(b)-shared(a)||Math.random()-.5).map(x=>x.brand)).slice(0,3);
+      return {key:'med:'+m.id,medId:m.id,prompt:esc(comp),sub:esc(m.form||'')+(sameBrands.length>1?` · ${sameBrands.length} recorded brands have this composition`:''),q:'Which brand(s)?',
+        answer:`<b>${sameBrands.map(x=>esc(x.brand)+' <small class="muted">('+esc(coName(x.companyId))+')</small>').join('<br>')}</b>${m.mnemonic?`<div class="meta">💡 ${esc(m.mnemonic)}</div>`:''}`,correct,options:others.length?shuffle([correct,...others]):null};
+    });
+  }else if(cfg.dir==='co2b'){
+    let cos=db.companies.filter(c=>db.medicines.some(m=>m.companyId===c.id));if(cfg.scope==='company')cos=cos.filter(c=>c.id===cfg.val);
+    items=weightedPick(cos,n,c=>{const q=qrec('co:'+c.id);return Math.max(1+q.w*2-q.c*.5,.2)}).map(c=>({key:'co:'+c.id,prompt:esc(c.name),sub:esc(c.divisions||''),q:'Which brands have you recorded for this company?',answer:db.medicines.filter(m=>m.companyId===c.id).sort(byName).map(m=>`<b>${esc(m.brand)}</b> — ${esc(compOrNone(m))}`).join('<br>')}));
+  }else{
+    let mrs=db.mrs.slice();if(cfg.scope==='company')mrs=mrs.filter(r=>r.companyId===cfg.val);
+    items=weightedPick(mrs,n,r=>{const q=qrec('mr:'+r.id);return Math.max(1+q.w*2-q.c*.5,.2)}).map(r=>({key:'mr:'+r.id,prompt:esc(r.name),sub:esc(r.territory||''),q:'Which company / division, and which brands do they promote?',answer:`<b>${esc([coName(r.companyId),r.division].filter(Boolean).join(' · ')||'Company not recorded')}</b><br>${(r.brandIds||[]).map(x=>byId('medicines',x)).filter(Boolean).map(m=>esc(m.brand)+' — '+esc(compOrNone(m))).join('<br>')||'<span class="muted">No brands recorded</span>'}`}));
+  }
+  return items;
+}
+function vQuiz(){
+  if(quizS.active)return quizSession();
+  const qs=Object.entries(db.quiz).filter(([k])=>k.startsWith('med:')&&byId('medicines',k.slice(4)));
+  const tc=qs.reduce((s,[,q])=>s+(q.c||0),0),tw=qs.reduce((s,[,q])=>s+(q.w||0),0);
+  const daily=dailyList(),forg=forgottenList();
+  const worst=qs.filter(([,q])=>q.w>0).sort((a,b)=>(b[1].w-b[1].c*.5)-(a[1].w-a[1].c*.5)).slice(0,10);
+  const doneToday=daily.filter(m=>qrec('med:'+m.id).lastSeen===today()).length;
+  const cfg=quizS.cfg||{mode:'flash',dir:'b2c',scope:'all',val:'',n:10};
+  return `<h1>Flashcards &amp; Quiz</h1>
+  ${quizzable().length<db.medicines.length?`<div class="alert info">${db.medicines.length-quizzable().length} brand(s) have no recorded ingredients and are excluded from composition quizzes.</div>`:''}
+  <div class="grid2">
+   <div class="card"><h2>Daily 5-minute revision</h2><p class="muted">Up to 10 brands chosen by spaced repetition — brands you got wrong, combinations and brands not reviewed recently come first.</p>
+    <div class="progress"><i style="width:${daily.length?Math.round(doneToday/daily.length*100):0}%"></i></div><p class="hint">${doneToday} of ${daily.length} reviewed today</p>
+    <button class="btn" data-act="startDaily" ${daily.length?'':'disabled'}>▶ Start daily revision</button>
+    <div style="margin-top:10px">${daily.map(m=>`<span class="chip" data-act="viewMed" data-id="${m.id}">${qrec('med:'+m.id).lastSeen===today()?'✓ ':''}${esc(m.brand)}</span>`).join('')||'<span class="muted">Nothing due. Add medicines with compositions to start.</span>'}</div></div>
+   <div class="card"><h2>Quiz me</h2><form id="quizCfg" onsubmit="return false"><div class="fgrid">
+    ${fld('Style',sel('mode',[['flash','Flashcards (reveal & self-grade)'],['mcq','Multiple choice']],cfg.mode))}
+    ${fld('Question type',sel('dir',[['b2c','Brand → recall composition'],['c2b','Composition → recall brand(s)'],['co2b','Company → recall brands'],['mr2c','MR → recall company & brands']],cfg.dir))}
+    ${fld('Which medicines',sel('scope',[['all','All medicines'],['starred','★ Starred'],['combo','Combination products only'],['forgotten','Recently forgotten'],['wrong','Ever answered wrong'],['company','By company…'],['category','By category…'],['ingredient','By ingredient…']],cfg.scope,undefined,'data-chg="qScope"'))}
+    <div id="qValWrap">${quizValSel(cfg.scope,cfg.val)}</div>
+    ${fld('Number of questions',sel('n',[5,10,20,30,50],cfg.n))}</div>
+    <div style="margin-top:12px"><button class="btn" data-act="startQuiz">▶ Start</button></div></form>
+    <p class="hint">Multiple choice is available for brand ↔ composition questions; distractors are chosen from brands that share an ingredient, so confusable combinations get tested.</p></div>
+   <div class="card"><h2>Performance</h2><div class="stats"><div class="stat"><b>${tc}</b><span>Correct</span></div><div class="stat"><b>${tw}</b><span>Incorrect</span></div><div class="stat"><b>${tc+tw?Math.round(tc/(tc+tw)*100)+'%':'—'}</b><span>Accuracy</span></div></div>
+    <h3>Most often wrong</h3>${worst.map(([k,q])=>{const m=byId('medicines',k.slice(4));return `<div class="li click" data-act="viewMed" data-id="${m.id}"><b>${esc(m.brand)}</b> <small class="muted">✗ ${q.w} · ✓ ${q.c}</small></div>`}).join('')||'<p class="muted">No mistakes recorded yet.</p>'}
+    ${tc+tw?'<button class="btn sm ghost" data-act="resetQuiz">Reset quiz statistics</button>':''}</div>
+   <div class="card"><h2>Recently forgotten</h2>${forg.map(m=>`<div class="li click" data-act="viewMed" data-id="${m.id}"><b>${esc(m.brand)}</b> <small class="muted">missed ${fmtDate(qrec('med:'+m.id).lastWrong)}</small><br><span class="muted">${esc(compStr(m))}</span></div>`).join('')||'<p class="muted">Nothing forgotten in the last 30 days.</p>'}
+    ${forg.length?'<button class="btn sm" data-act="startForgotten">▶ Revise these</button>':''}</div>
+  </div>`;
+}
+function quizValSel(scope,val){
+  if(scope==='company')return fld('Company',sel('val',coList(),val));
+  if(scope==='category')return fld('Category',sel('val',uniq(db.medicines.map(m=>m.category).filter(Boolean)).sort(),val));
+  if(scope==='ingredient'){const m={};db.medicines.forEach(x=>(x.ingredients||[]).forEach(i=>{if(i.name)m[nkey(i.name)]=i.name}));return fld('Ingredient',sel('val',Object.entries(m).sort((a,b)=>a[1].localeCompare(b[1])),val))}
+  return '';
+}
+function startQuiz(cfg){
+  const items=buildQuiz(cfg);
+  if(!items.length){toast('No items match. Add medicines with compositions, or change the selection.',true);return}
+  Object.assign(quizS,{active:true,cfg,items,i:0,revealed:false,picked:null,correct:0,wrong:0,missed:[]});go('quiz');
+}
+function quizSession(){
+  const s=quizS;
+  if(s.i>=s.items.length){const pct=Math.round(s.correct/s.items.length*100);
+    return `<h1>Session complete</h1><div class="qcard"><div class="qprompt">${s.correct} / ${s.items.length} (${pct}%)</div><div class="qsub">${pct>=80?'Excellent recall.':pct>=50?'Good — keep revising the missed ones.':'Revise the missed items and try again tomorrow.'}</div></div>
+    ${s.missed.length?`<div class="card"><h2>Missed</h2>${s.missed.map(it=>`<div class="li"><b>${it.prompt}</b><div>${it.answer}</div></div>`).join('')}</div>`:''}
+    <div class="row">${s.missed.length?'<button class="btn" data-act="retryMissed">↻ Retry missed</button>':''}<button class="btn sec" data-act="quitQuiz">Back to quiz menu</button></div>`}
+  const it=s.items[s.i];const mcq=s.cfg.mode==='mcq'&&it.options;
+  return `<div class="row between"><b>Question ${s.i+1} of ${s.items.length}</b><span>✓ ${s.correct} · ✗ ${s.wrong} <button class="btn sm ghost" data-act="quitQuiz">Quit</button></span></div>
+  <div class="progress"><i style="width:${Math.round(s.i/s.items.length*100)}%"></i></div>
+  <div class="qcard"><div class="qsub">${it.q}</div><div class="qprompt">${it.prompt}</div><div class="qsub">${it.sub||''}</div>
+   ${mcq?`<div class="qopts">${it.options.map((o,i)=>{let c='';if(s.picked!==null){if(o===it.correct)c='right';else if(i===s.picked)c='wrong'}return `<button class="qopt ${c}" data-act="qPick" data-i="${i}" ${s.picked!==null?'disabled':''}>${esc(o)}</button>`}).join('')}</div>
+     ${s.picked!==null?`<div class="qans">${it.answer}</div><div style="margin-top:14px"><button class="btn" data-act="qNext">Next →</button></div>`:''}`
+   :s.revealed?`<div class="qans">${it.answer}</div><div class="row" style="justify-content:center;margin-top:14px"><button class="btn" style="background:var(--ok);border-color:var(--ok)" data-act="qGrade" data-ok="1">✓ I knew it</button><button class="btn danger" data-act="qGrade" data-ok="0">✗ I forgot</button></div>`
+   :`<div style="margin-top:18px"><button class="btn" data-act="qReveal" style="min-width:200px">Reveal answer</button></div><p class="hint">Say the answer aloud first, then reveal.</p>`}
+  </div>${it.medId&&!byId('medicines',it.medId)?.verified?'<p class="hint">⚠ Based on an unverified entry — verify against the package insert.</p>':''}`;
+}
+
+/* =========================================================
+   REPORTS & PRINT
+   ========================================================= */
+function vReports(){
+  const cats={};db.medicines.forEach(m=>{const k=m.category||'Uncategorised';cats[k]=(cats[k]||0)+1});
+  const cos={};db.medicines.forEach(m=>{const k=coName(m.companyId)||'No company';cos[k]=(cos[k]||0)+1});
+  const d90=addDays(today(),-90),d30=addDays(today(),-30);
+  const mrRows=db.mrs.slice().sort(byName).map(r=>{const vs=visitsOf(r.id);return {r,n30:vs.filter(v=>v.datetime>=d30).length,n90:vs.filter(v=>v.datetime>=d90).length,last:mrLastDate(r)}});
+  const ver=db.medicines.filter(m=>m.verified).length;
+  return `<h1>Reports</h1>
+  <div class="card"><h2>Print</h2><div class="row">
+   <button class="btn sec" data-act="print" data-r="meds">🖨 Medicine list</button><button class="btn sec" data-act="print" data-r="mrs">🖨 MR directory</button><button class="btn sec" data-act="print" data-r="mgrs">🖨 Manager directory</button><button class="btn sec" data-act="print" data-r="visits">🖨 Visit log (90 days)</button><button class="btn sec" data-act="print" data-r="gifts">🖨 Gifts &amp; honorarium register</button></div>
+   <p class="hint">On Android, choose “Save as PDF” in the print dialog to keep a copy.</p></div>
+  <div class="stats"><div class="stat"><b>${db.medicines.length}</b><span>Brands</span></div><div class="stat"><b>${ver}</b><span>Verified compositions</span></div><div class="stat"><b>${db.medicines.length-ver}</b><span>Unverified</span></div><div class="stat"><b>${db.visits.filter(v=>v.datetime>=d30).length}</b><span>Visits (30 days)</span></div><div class="stat"><b>${db.gifts.length}</b><span>Gift / honorarium records</span></div></div>
+  <div class="grid2">
+   <div class="card"><h2>Brands by category</h2><div class="tblwrap"><table class="tbl"><tbody>${Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<tr><td>${esc(k)}</td><td class="n">${n}</td></tr>`).join('')||'<tr><td>—</td></tr>'}</tbody></table></div></div>
+   <div class="card"><h2>Brands by company</h2><div class="tblwrap"><table class="tbl"><tbody>${Object.entries(cos).sort((a,b)=>b[1]-a[1]).map(([k,n])=>`<tr><td>${esc(k)}</td><td class="n">${n}</td></tr>`).join('')||'<tr><td>—</td></tr>'}</tbody></table></div></div>
+  </div>
+  <div class="card"><h2>MR visit activity</h2><div class="tblwrap"><table class="tbl"><thead><tr><th>MR</th><th>Company</th><th class="n">Visits 30d</th><th class="n">Visits 90d</th><th>Last visit</th><th>Frequency</th></tr></thead><tbody>${mrRows.map(x=>`<tr><td>${esc(x.r.name)}</td><td>${esc(coName(x.r.companyId))}</td><td class="n">${x.n30}</td><td class="n">${x.n90}</td><td>${x.last?fmtDate(x.last):'—'}</td><td>${esc(x.r.frequency||'')}</td></tr>`).join('')||'<tr><td colspan="6" class="muted">No MRs.</td></tr>'}</tbody></table></div></div>
+  <div class="card"><h2>Gifts &amp; honorarium summary</h2><p>Offered: <b>${money(db.gifts.reduce((s,g)=>s+gOffered(g),0))}</b> · Actually received: <b>${money(db.gifts.reduce((s,g)=>s+gReceived(g),0))}</b> · Not yet reviewed: <b>${db.gifts.filter(g=>!g.reviewStatus||g.reviewStatus==='Not yet reviewed').length}</b> records. <a href="#/gifts">Detailed totals</a></p></div>`;
+}
+function doPrint(kind){
+  const head=(t)=>`<h2 style="margin:0">MedRecall — ${t}</h2><p style="margin:2px 0 10px">Printed ${fmtDT(nowLocal())} · ⚠ = composition not verified against package insert / official product information · DEMO = fictional demonstration record</p>`;
+  const T=(cols,rows)=>`<table><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead><tbody>${rows.join('')||`<tr><td colspan="${cols.length}">No records</td></tr>`}</tbody></table>`;
+  let h='';
+  if(kind==='meds')h=head('Medicine list')+T(['Brand','Composition','Form / strength','Pack','Category','Company / division','Source','Verified'],db.medicines.slice().sort(byName).map(m=>`<tr><td><b>${esc(m.brand)}</b>${m.demo?' (DEMO)':''}</td><td>${esc(compOrNone(m))}</td><td>${esc([m.form,m.strength].filter(Boolean).join(' · '))}</td><td>${esc(m.pack)}</td><td>${esc(m.category)}</td><td>${esc([coName(m.companyId),m.division].filter(Boolean).join(' · '))}</td><td>${esc([m.source,m.sourceDetails].filter(Boolean).join(' — '))}</td><td>${m.verified?'Yes':'⚠ No'}</td></tr>`));
+  else if(kind==='mrs')h=head('MR directory')+T(['Name','Phone','Company / division','Territory','Brands promoted','Last visit','Frequency'],db.mrs.slice().sort(byName).map(r=>`<tr><td><b>${esc(r.name)}</b></td><td>${esc(r.phone)}</td><td>${esc([coName(r.companyId),r.division].filter(Boolean).join(' · '))}</td><td>${esc(r.territory)}</td><td>${(r.brandIds||[]).map(x=>byId('medicines',x)?.brand).filter(Boolean).map(esc).join(', ')}</td><td>${mrLastDate(r)?fmtDate(mrLastDate(r)):''}</td><td>${esc(r.frequency)}</td></tr>`));
+  else if(kind==='mgrs')h=head('Manager directory')+T(['Name','Designation','Company / division','Territory','Phone','MRs'],db.managers.slice().sort(byName).map(g=>`<tr><td><b>${esc(g.name)}</b></td><td>${esc(g.designation)}</td><td>${esc([coName(g.companyId),g.division].filter(Boolean).join(' · '))}</td><td>${esc(g.territory)}</td><td>${esc(g.phone)}</td><td>${(g.mrIds||[]).map(x=>byId('mrs',x)?.name).filter(Boolean).map(esc).join(', ')}</td></tr>`));
+  else if(kind==='visits')h=head('Visit log – last 90 days')+T(['Date','MR','Company','Brands discussed','Samples','Follow-up / next visit','Notes'],db.visits.filter(v=>v.datetime>=addDays(today(),-90)).sort((a,b)=>b.datetime.localeCompare(a.datetime)).map(v=>`<tr><td>${fmtDT(v.datetime)}</td><td>${esc(mrLabel(v))}</td><td>${esc(coLabel(v))}</td><td>${(v.brandIds||[]).map((b,i)=>esc(medLabel(b,i,v))).join(', ')}</td><td>${(v.samples||[]).map(s=>esc((byId('medicines',s.medId)?.brand||s.name)+' ×'+(s.qty||'?'))).join(', ')}</td><td>${esc(v.followUp)}${v.nextVisit?' · next '+fmtDate(v.nextVisit):''}</td><td>${esc(v.notes)}</td></tr>`));
+  else if(kind==='gifts')h=head('Gifts & honorarium register')+`<p><b>Recording an item does not mean it is permissible.</b> Review against applicable NMC regulations, UCPMP and company policy.</p>`+T(['Date','MR','Company','Description','Category','Offered ₹','Received ₹','Status','Purpose / documentation','Review'],db.gifts.slice().sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(g=>`<tr><td>${fmtDate(g.date)}</td><td>${esc(mrLabel(g))}</td><td>${esc(coLabel(g))}</td><td>${esc(g.description)}</td><td>${esc(g.category)}</td><td>${gOffered(g)||''}</td><td>${gReceived(g)||''}</td><td>${esc(g.status)}</td><td>${esc([g.purpose,g.documentation,g.event].filter(Boolean).join(' · '))}</td><td>${esc(g.reviewStatus||'Not yet reviewed')}${g.reviewNotes?': '+esc(g.reviewNotes):''}</td></tr>`));
+  $('#printArea').innerHTML=h;document.body.classList.add('printing');
+  setTimeout(()=>window.print(),50);
+}
+
+/* =========================================================
+   CSV & JSON
+   ========================================================= */
+function parseCSV(text){
+  text=String(text).replace(/^﻿/,'');
+  const first=text.split(/\r?\n/,1)[0]||'';const cnt=c=>(first.match(new RegExp('\\'+c,'g'))||[]).length;
+  const d=cnt('\t')>cnt(',')&&cnt('\t')>cnt(';')?'\t':cnt(';')>cnt(',')?';':',';
+  const rows=[];let row=[],f='',q=false;
+  for(let i=0;i<text.length;i++){const c=text[i];
+    if(q){if(c==='"'){if(text[i+1]==='"'){f+='"';i++}else q=false}else f+=c}
+    else if(c==='"')q=true;else if(c===d){row.push(f);f=''}else if(c==='\n'||c==='\r'){if(c==='\r'&&text[i+1]==='\n')i++;row.push(f);rows.push(row);row=[];f=''}else f+=c}
+  if(f!==''||row.length){row.push(f);rows.push(row)}
+  return rows.filter(r=>r.some(c=>c.trim()!==''));
+}
+const csvRisky=v=>/^[=@]/.test(v)||/^[+\-](?![\d\s.])/.test(v);
+const csvCell=v=>{v=v==null?'':String(v);const r=csvRisky(v);return r||/[",\n\r]/.test(v)?'"'+(r?"'":'')+v.replace(/"/g,'""')+'"':v};
+function toCSV(cols,rows){return '﻿'+[cols.join(','),...rows.map(r=>cols.map(c=>csvCell(r[c])).join(','))].join('\r\n')}
+function download(name,content,type){const b=new Blob([content],{type});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
+const CSV_SPEC={
+  medicines:{cols:['brand','generic','composition','form','strength','pack','category','indications','dosage','company','division','mr','date_introduced','price','source','source_details','verified','starred','mnemonic','notes','id','created','updated'],
+    alias:{brand:['brand','brandname','product','productname','name','tradename'],generic:['generic','genericname','salt','saltname','molecule','molecules'],composition:['composition','ingredients','content','contents','formula','formulation'],form:['form','dosageform','type'],strength:['strength'],pack:['pack','packsize','packing'],category:['category','therapeuticcategory','therapy','therapeuticclass','class'],indications:['indications','indication','uses'],dosage:['dosage','dose','standarddosage'],company:['company','manufacturer','pharmacompany','marketedby','mfr'],division:['division','businessunit','bu'],mr:['mr','medicalrepresentative','representative','mrname'],date_introduced:['dateintroduced','introduced','datediscussed','date'],price:['price','mrp'],source:['source','compositionsource'],source_details:['sourcedetails'],verified:['verified','verification'],starred:['starred','star','bookmark'],mnemonic:['mnemonic','memoryaid'],notes:['notes','note','remarks'],id:['id']},
+    row:m=>({brand:m.brand,generic:m.generic,composition:compStr(m),form:m.form,strength:m.strength,pack:m.pack,category:m.category,indications:m.indications,dosage:m.dosage,company:coName(m.companyId),division:m.division,mr:byId('mrs',m.mrId)?.name||'',date_introduced:m.dateIntroduced,price:m.price,source:m.source,source_details:m.sourceDetails,verified:m.verified?'yes':'no',starred:m.starred?'yes':'',mnemonic:m.mnemonic,notes:m.notes,id:m.id,created:m.created,updated:m.updated})},
+  companies:{cols:['name','divisions','portfolio','hq','notes','id'],alias:{name:['name','company','companyname'],divisions:['divisions','division'],portfolio:['portfolio','productportfolio','products'],hq:['hq','headquarters','office','regionaloffice'],notes:['notes','remarks'],id:['id']},row:c=>({...c})},
+  mrs:{cols:['name','phone','company','division','territory','brands','first_visit','last_visit','frequency','notes','company_history','id'],alias:{name:['name','mrname','fullname'],phone:['phone','mobile','phonenumber','contact'],company:['company'],division:['division'],territory:['territory','area','hq'],brands:['brands','brandspromoted'],first_visit:['firstvisit','dateoffirstvisit'],frequency:['frequency','visitfrequency'],notes:['notes','remarks'],id:['id']},
+    row:r=>({name:r.name,phone:r.phone,company:coName(r.companyId),division:r.division,territory:r.territory,brands:(r.brandIds||[]).map(x=>byId('medicines',x)?.brand).filter(Boolean).join('; '),first_visit:r.firstVisit,last_visit:mrLastDate(r),frequency:r.frequency,notes:r.notes,company_history:(r.companyHistory||[]).map(h=>`${h.companyName||coName(h.companyId)} (${h.from||'?'} to ${h.to})`).join('; '),id:r.id})},
+  managers:{cols:['name','designation','company','division','territory','phone','mrs','notes','id'],alias:{name:['name','fullname','managername'],designation:['designation','title','role'],company:['company'],division:['division'],territory:['territory','area','region'],phone:['phone','mobile','contact'],mrs:['mrs','associatedmrs'],notes:['notes','remarks'],id:['id']},
+    row:g=>({name:g.name,designation:g.designation,company:coName(g.companyId),division:g.division,territory:g.territory,phone:g.phone,mrs:(g.mrIds||[]).map(x=>byId('mrs',x)?.name).filter(Boolean).join('; '),notes:g.notes,id:g.id})},
+  visits:{cols:['datetime','mr','company','division','brands','discussed','samples','follow_up','next_visit','notes','id'],row:v=>({datetime:v.datetime,mr:mrLabel(v),company:coLabel(v),division:v.division,brands:(v.brandIds||[]).map((b,i)=>medLabel(b,i,v)).join('; '),discussed:v.discussed,samples:(v.samples||[]).map(s=>`${byId('medicines',s.medId)?.brand||s.name} x${s.qty||'?'} exp ${s.expiry||'?'}`).join('; '),follow_up:v.followUp,next_visit:v.nextVisit,notes:v.notes,id:v.id})},
+  gifts:{cols:['date','mr','company','description','category','value','amount_offered','amount_received','status','purpose','documentation','event','review_status','review_date','review_notes','notes','id'],row:g=>({date:g.date,mr:mrLabel(g),company:coLabel(g),description:g.description,category:g.category,value:g.value,amount_offered:g.amountOffered,amount_received:g.amountReceived,status:g.status,purpose:g.purpose,documentation:g.documentation,event:g.event,review_status:g.reviewStatus,review_date:g.reviewDate,review_notes:g.reviewNotes,notes:g.notes,id:g.id})}
+};
+function exportCSV(type){const s=CSV_SPEC[type];download(`MedRecall-${type}-${today()}.csv`,toCSV(s.cols,db[type].map(s.row)),'text/csv;charset=utf-8')}
+function templateCSV(type){const s=CSV_SPEC[type];const ex={medicines:{brand:'ExampleBrand 40',generic:'Telmisartan',composition:'Telmisartan 40 mg',form:'Tablet',strength:'40 mg',pack:'10 tablets',category:'Antihypertensive',company:'Example Pharma',division:'Cardio',source:'Package insert',verified:'no',notes:'Replace this example row'},companies:{name:'Example Pharma',divisions:'Cardio; Diabeto'},mrs:{name:'Example MR',phone:'9800000000',company:'Example Pharma',division:'Cardio',territory:'Area name',brands:'ExampleBrand 40'},managers:{name:'Example Manager',designation:'Area Sales Manager (ASM)',company:'Example Pharma',mrs:'Example MR'}}[type];
+  const cols=s.cols.filter(c=>!['id','created','updated','last_visit','company_history'].includes(c));download(`MedRecall-${type}-template.csv`,toCSV(cols,[ex]),'text/csv;charset=utf-8')}
+const isYes=v=>/^(y|yes|true|1|verified|✓)$/i.test(String(v||'').trim());
+function mapRows(type,rows){
+  const s=CSV_SPEC[type];const hdr=rows[0].map(h=>nkey(h).replace(/\./g,''));const map={};const unmapped=[];
+  hdr.forEach((h,i)=>{const f=Object.keys(s.alias).find(k=>s.alias[k].includes(h)&&!(k in map));if(f)map[f]=i;else unmapped.push(rows[0][i])});
+  const recs=rows.slice(1).map(r=>{const o={};for(const k in map)o[k]=(r[map[k]]||'').trim().replace(/^'(?=[=+\-@])/,'');return o});
+  return {map,unmapped,recs};
+}
+function findDup(type,o){
+  if(o.id){const x=byId(type,o.id);if(x)return x}
+  const n=nkey(o.name||o.brand);if(!n)return null;
+  if(type==='medicines'){const co=o.company?db.companies.find(c=>nkey(c.name)===nkey(o.company)):null;return db.medicines.find(m=>nkey(m.brand)===n&&(!o.strength||nkey(m.strength)===nkey(o.strength))&&(!co||m.companyId===co.id))||null}
+  if(type==='companies')return db.companies.find(c=>nkey(c.name)===n)||null;
+  const co=o.company?db.companies.find(c=>nkey(c.name)===nkey(o.company)):null;
+  return db[type].find(r=>nkey(r.name)===n&&(!co||r.companyId===co.id))||null;
+}
+function previewImport(type,text,fname){
+  const rows=parseCSV(text);if(rows.length<2){toast('The file has no data rows',true);return}
+  const {map,unmapped,recs}=mapRows(type,rows);const keyF=type==='medicines'?'brand':'name';
+  if(!(keyF in map)){alert(`Could not find a “${keyF}” column. First row must contain column headers. Download the template to see the expected format.`);return}
+  const valid=recs.filter(r=>r[keyF]);const dups=valid.filter(r=>findDup(type,r));
+  ui.pendingImport={type,recs:valid,fname};
+  const shown=Object.keys(map);
+  openModal('Import '+type+' from CSV',`<p>File: <b>${esc(fname)}</b></p>
+   <div class="stats"><div class="stat"><b>${recs.length}</b><span>Data rows</span></div><div class="stat"><b>${valid.length}</b><span>With ${keyF}</span></div><div class="stat"><b>${dups.length}</b><span>Possible duplicates</span></div></div>
+   <p class="hint">Columns recognised: ${shown.map(esc).join(', ')}${unmapped.length?`<br>Ignored columns: ${unmapped.map(esc).join(', ')}`:''}</p>
+   ${type==='medicines'?'<div class="alert warn">Imported compositions are marked <b>UNVERIFIED</b> unless the “verified” column says yes. Compositions are taken only from the file — nothing is guessed. Please check them against package inserts.</div>':''}
+   <div class="tblwrap"><table class="tbl"><thead><tr>${shown.map(k=>`<th>${esc(k)}</th>`).join('')}</tr></thead><tbody>${valid.slice(0,6).map(r=>`<tr>${shown.map(k=>`<td>${esc(r[k])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+   <form id="mform"><h3>If a record already exists</h3>
+    <label class="fld chk"><input type="radio" name="dupMode" value="skip" checked> Skip it (keep existing)</label>
+    <label class="fld chk"><input type="radio" name="dupMode" value="update"> Update existing with non-empty values from the file</label>
+    <label class="fld chk"><input type="radio" name="dupMode" value="add"> Add as a new record anyway</label>${formFoot('Import '+valid.length+' rows')}</form>`,fd=>doImport(fd.get('dupMode')),true);
+}
+function doImport(mode){
+  const {type,recs,fname}=ui.pendingImport||{};if(!type)return;let added=0,updated=0,skipped=0;
+  const findMr=name=>name?db.mrs.find(r=>nkey(r.name)===nkey(name)):null;
+  recs.forEach(o=>{
+    const dup=findDup(type,o);if(dup&&mode==='skip'){skipped++;return}
+    let rec={};
+    if(type==='medicines'){
+      let ings=parseComposition(o.composition);if(!ings.length&&o.generic)ings=parseComposition(o.generic).map(i=>({name:i.name,strength:i.strength}));
+      rec={brand:o.brand,generic:o.generic,ingredients:ings,form:o.form,strength:o.strength||ings.map(i=>i.strength).filter(Boolean).join(' / '),pack:o.pack,category:o.category,indications:o.indications,dosage:o.dosage,companyId:o.company?ensureCompany(o.company).id:undefined,division:o.division,mrId:findMr(o.mr)?.id,dateIntroduced:o.date_introduced&&parseD(o.date_introduced)?o.date_introduced:undefined,price:o.price,source:o.source,sourceDetails:o.source_details||(o.source?'':'CSV import: '+fname),verified:'verified' in o?isYes(o.verified):undefined,starred:'starred' in o?isYes(o.starred):undefined,mnemonic:o.mnemonic,notes:o.notes};
+      if(!o.composition&&!o.generic)rec.ingredients=undefined;
+    }else if(type==='companies')rec={name:o.name,divisions:(o.divisions||'').replace(/;/g,','),portfolio:o.portfolio,hq:o.hq,notes:o.notes};
+    else if(type==='mrs'){const ids=(o.brands||'').split(/;|\|/).map(b=>db.medicines.find(m=>nkey(m.brand)===nkey(b))?.id).filter(Boolean);rec={name:o.name,phone:o.phone,companyId:o.company?ensureCompany(o.company).id:undefined,division:o.division,territory:o.territory,brandIds:ids.length?ids:undefined,firstVisit:o.first_visit&&parseD(o.first_visit)?o.first_visit:undefined,frequency:o.frequency,notes:o.notes}}
+    else if(type==='managers'){const ids=(o.mrs||'').split(/;|\|/).map(n=>findMr(n)?.id).filter(Boolean);rec={name:o.name,designation:o.designation,companyId:o.company?ensureCompany(o.company).id:undefined,division:o.division,territory:o.territory,phone:o.phone,mrIds:ids.length?ids:undefined,notes:o.notes}}
+    Object.keys(rec).forEach(k=>{if(rec[k]===undefined||rec[k]==='')delete rec[k]});
+    if(dup&&mode==='update'){if(type==='mrs'&&rec.companyId&&dup.companyId&&rec.companyId!==dup.companyId){dup.companyHistory=dup.companyHistory||[];dup.companyHistory.push({companyId:dup.companyId,companyName:coName(dup.companyId),division:dup.division||'',from:dup.companySince||'',to:today()});rec.companySince=today()}Object.assign(dup,rec,{updated:nowISO()});updated++;return}
+    const base={medicines:{ingredients:[],verified:false,starred:false},companies:{},mrs:{brandIds:[],companyHistory:[],companySince:today()},managers:{mrIds:[]}}[type];
+    db[type].push(Object.assign({id:uid({medicines:'med',companies:'co',mrs:'mr',managers:'mgr'}[type]),created:nowISO(),updated:nowISO()},clone(base),rec));added++;
+  });
+  ui.pendingImport=null;save();refresh();alert(`Import complete: ${added} added, ${updated} updated, ${skipped} skipped.`);
+}
+function backupJSON(){
+  const data=JSON.stringify({app:'MedRecall',version:APP_VERSION,exported:nowISO(),data:db},null,1);
+  download(`MedRecall-backup-${today()}.json`,data,'application/json');db.settings.lastBackup=nowISO();save();toast('Backup downloaded — keep it somewhere safe (e.g. Google Drive or email it to yourself)');refresh();
+}
+function restoreJSON(text,fname){
+  let obj;try{obj=JSON.parse(text)}catch(e){alert('This is not a valid JSON file.');return}
+  const d=obj&&obj.data?obj.data:obj;if(!d||!COLS.some(c=>Array.isArray(d[c]))){alert('This file does not look like a MedRecall backup.');return}
+  const inc=normalizeDB(d);
+  openModal('Restore backup',`<p>File: <b>${esc(fname)}</b>${obj.exported?' · exported '+fmtDT(obj.exported.slice(0,16)):''}</p>
+   <div class="tblwrap"><table class="tbl"><thead><tr><th></th><th class="n">In backup</th><th class="n">Currently</th></tr></thead><tbody>${COLS.map(c=>`<tr><td>${c}</td><td class="n">${inc[c].length}</td><td class="n">${db[c].length}</td></tr>`).join('')}</tbody></table></div>
+   <form id="mform"><h3>How to restore</h3>
+   <label class="fld chk"><input type="radio" name="m" value="merge" checked> Merge — add records missing here; for records in both, keep the most recently updated</label>
+   <label class="fld chk"><input type="radio" name="m" value="replace"> Replace — erase everything here and use only the backup</label>${formFoot('Restore')}</form>`,fd=>{
+    if(fd.get('m')==='replace'){if(!confirm('Replace ALL current data with the backup? Current data will be lost unless you have backed it up.'))return false;const lb=db.settings.lastBackup;db=inc;db.settings.lastBackup=db.settings.lastBackup||lb}
+    else{COLS.forEach(c=>inc[c].forEach(r=>{const ex=byId(c,r.id);if(!ex)db[c].push(r);else if((r.updated||'')>(ex.updated||''))Object.assign(ex,r)}));
+      Object.entries(inc.quiz).forEach(([k,q])=>{const e=db.quiz[k];if(!e||(q.lastSeen||'')>(e.lastSeen||''))db.quiz[k]=q})}
+    save();toast('Backup restored');ui.medSel.clear();refresh();});
+}
+function pickFile(accept,cb){const f=$('#fileIn');f.accept=accept;f.value='';f.onchange=()=>{const file=f.files[0];if(!file)return;const r=new FileReader();r.onload=()=>cb(String(r.result),file.name);r.onerror=()=>toast('Could not read the file',true);r.readAsText(file)};f.click()}
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+function vSettings(){
+  const lb=db.settings.lastBackup;const nDemo=COLS.reduce((s,c)=>s+db[c].filter(x=>x.demo).length,0);
+  const size=(()=>{try{return Math.round((localStorage.getItem(KEY)||'').length/1024)}catch(e){return '?'}})();
+  return `<h1>Backup &amp; Settings</h1>
+  <div class="alert bad"><b>Important – where your data lives.</b><br>All records are stored <b>only in this browser on this device</b>. They are <b>not</b> synchronised to other devices or to any server. Clearing browser data / site data, uninstalling the browser, using a private/incognito window, opening the file from a different location or app, or losing the device <b>can permanently destroy your records</b>. Download a JSON backup regularly and store it safely (e.g. Google Drive, or email it to yourself). To move to another device, restore the backup there.</div>
+  <div class="grid2">
+   <div class="card"><h2>JSON backup (complete)</h2><p>Last backup: <b>${lb?fmtDT(lb.slice(0,16))+' ('+ago(lb)+')':'never'}</b></p>
+    <div class="row"><button class="btn" data-act="backup">⬇ Download full backup</button><button class="btn sec" data-act="restore">⬆ Restore from backup</button></div>
+    <p class="hint">Includes medicines, companies, MRs, managers, visits, gifts register and quiz progress. Recommended: back up at least weekly.</p></div>
+   <div class="card"><h2>CSV export</h2><p class="hint">Opens in Excel / Google Sheets.</p><div class="row">${['medicines','companies','mrs','managers','visits','gifts'].map(t=>`<button class="btn sec sm" data-act="exportCsv" data-t="${t}">${t==='mrs'?'MRs':t[0].toUpperCase()+t.slice(1)}</button>`).join('')}</div></div>
+   <div class="card"><h2>CSV import (bulk)</h2><p class="hint">Useful when an MR gives you a product list. In Excel choose <i>File → Save As → CSV UTF-8</i>. The first row must be column headers (e.g. Brand, Generic, Composition, Form, Strength, Pack, Category, Company, Division). Write combinations as “Telmisartan 40 mg + Amlodipine 5 mg”. You will see a preview before anything is saved.</p>
+    ${['medicines','companies','mrs','managers'].map(t=>`<div class="row" style="margin-bottom:6px"><b style="min-width:100px">${t==='mrs'?'MRs':t[0].toUpperCase()+t.slice(1)}</b><button class="btn sm" data-act="importCsv" data-t="${t}">⬆ Import CSV</button><button class="btn sm ghost" data-act="templateCsv" data-t="${t}">Template</button></div>`).join('')}</div>
+   <div class="card"><h2>Storage</h2><p>Approx. size: <b>${size} KB</b> · Storage available: <b>${storageOK?'yes':'NO'}</b><br><span id="persistInfo" class="hint"></span></p>
+    <button class="btn sec sm" data-act="persist">Ask browser to keep data (persistent storage)</button>
+    <p class="hint">Even with persistent storage, the browser or user can still delete data. Backups remain essential.</p></div>
+   <div class="card"><h2>Demonstration data</h2><p>${nDemo} fictional demo records present.</p>
+    <div class="row"><button class="btn sec sm" data-act="removeDemo" ${nDemo?'':'disabled'}>Remove demo data</button><button class="btn sec sm" data-act="loadDemo">Load demo data</button></div></div>
+   <div class="card"><h2>Danger zone</h2><p class="hint">Permanently erases everything stored by MedRecall in this browser.</p><button class="btn danger sm" data-act="eraseAll">Erase all data</button></div>
+  </div>`;
+}
+
+/* =========================================================
+   ACTIONS & EVENTS
+   ========================================================= */
+const A={
+  noop(){},toggleNav(){document.body.classList.toggle('navopen')},closeModal,
+  addMed(){medForm()},editMed:t=>medForm(t.dataset.id),dupMed:t=>medForm(t.dataset.id,true),delMed:t=>delMed(t.dataset.id),viewMed:t=>showMed(t.dataset.id),
+  starMed(t,e){e.stopPropagation();const m=byId('medicines',t.dataset.id);if(!m)return;m.starred=!m.starred;m.updated=nowISO();save();if(t.dataset.reopen){showMed(m.id);refresh()}else if(ui.view==='medicines')updMeds();else{t.classList.toggle('on',m.starred)}},
+  reveal(t){if(t.closest('.hidecomp')&&!t.classList.contains('revealed')){t.classList.add('revealed');return}const p=t.closest('[data-act=viewMed]');if(p)showMed(p.dataset.id)},
+  addIng(){$('#ings').insertAdjacentHTML('beforeend',ingRow())},rmRow:t=>t.parentElement.remove(),
+  parseComp(){const v=$('#pasteComp').value;const ings=parseComposition(v);if(!ings.length){toast('Type a composition first, e.g. Telmisartan 40 mg + Amlodipine 5 mg',true);return}$('#ings').innerHTML=ings.map(ingRow).join('');const g=$('#mform [name=generic]');if(!g.value)g.value=ings.map(i=>i.name).join(' + ');const s=$('#mform [name=strength]');if(!s.value)s.value=ings.map(i=>i.strength).filter(Boolean).join(' / ');toast(ings.length+' ingredient(s) filled — please check')},
+  compare:showCompare,clearSel(){ui.medSel.clear();closeModal();refresh()},
+  medMode(t){ui.medF.mode=t.dataset.m;refresh()},
+  clearMedF(){Object.assign(ui.medF,{q:'',company:'',form:'',category:'',mr:'',recent:'',starred:false,ver:'',sort:'brand'});refresh()},
+  medFilter(t){Object.assign(ui.medF,{q:'',company:'',form:'',category:'',mr:'',recent:'',starred:false,ver:''});ui.medF[t.dataset.k]=t.dataset.v;ui.medF.mode='list';closeModal();go('medicines')},
+  filterUnverified(t,e){e.preventDefault();Object.assign(ui.medF,{q:'',company:'',form:'',category:'',mr:'',recent:'',starred:false,ver:'unv',mode:'list'});go('medicines')},
+  focusQuick(){const q=$('#quickQ');q.scrollIntoView({behavior:'smooth',block:'center'});q.focus()},
+  addCo(){coForm()},editCo:t=>coForm(t.dataset.id),dupCo:t=>coForm(t.dataset.id,true),delCo:t=>delCo(t.dataset.id),viewCo:t=>showCo(t.dataset.id),
+  addMr(){mrForm()},editMr:t=>mrForm(t.dataset.id),dupMr:t=>mrForm(t.dataset.id,true),delMr:t=>delMr(t.dataset.id),viewMr:t=>showMr(t.dataset.id),
+  addMgr(){mgrForm()},editMgr:t=>mgrForm(t.dataset.id),dupMgr:t=>mgrForm(t.dataset.id,true),delMgr:t=>delMgr(t.dataset.id),viewMgr:t=>showMgr(t.dataset.id),
+  peopleTab(t,e){if(t.tagName==='A'){e.preventDefault()}ui.peopleTab=t.dataset.tab;go('people')},
+  addVisit:t=>visitForm(null,false,t.dataset.mr),editVisit:t=>visitForm(t.dataset.id),dupVisit:t=>visitForm(t.dataset.id,true),delVisit:t=>delVisit(t.dataset.id),viewVisit:t=>showVisit(t.dataset.id),
+  addSamp(){$('#samps').insertAdjacentHTML('beforeend',sampRow())},
+  addGift(){giftForm()},editGift:t=>giftForm(t.dataset.id),dupGift:t=>giftForm(t.dataset.id,true),delGift:t=>delGift(t.dataset.id),viewGift:t=>showGift(t.dataset.id),
+  giftsForMr(t){Object.assign(ui.giftF,{q:'',status:'',category:'',company:'',year:'',mr:t.dataset.id});closeModal();go('gifts')},
+  startQuiz(){const f=$('#quizCfg');const fd=new FormData(f);const cfg={mode:fd.get('mode'),dir:fd.get('dir'),scope:fd.get('scope'),val:fd.get('val')||'',n:num(fd.get('n'))||10};if(['company','category','ingredient'].includes(cfg.scope)&&!cfg.val){toast('Choose a value for the selected filter',true);return}if(cfg.dir==='mr2c'&&!['all','company'].includes(cfg.scope))cfg.scope='all';if(cfg.dir==='co2b'&&!['all','company'].includes(cfg.scope))cfg.scope='all';startQuiz(cfg)},
+  startDaily(){startQuiz({mode:'flash',dir:'b2c',scope:'daily',val:'',n:10})},
+  startForgotten(){startQuiz({mode:'flash',dir:'b2c',scope:'forgotten',val:'',n:20})},
+  qReveal(){quizS.revealed=true;render(false)},
+  qGrade(t){const it=quizS.items[quizS.i];const ok=t.dataset.ok==='1';quizRecord(it.key,ok);if(ok)quizS.correct++;else{quizS.wrong++;quizS.missed.push(it)}quizS.i++;quizS.revealed=false;render(false)},
+  qPick(t){const it=quizS.items[quizS.i];if(quizS.picked!==null)return;quizS.picked=num(t.dataset.i);const ok=it.options[quizS.picked]===it.correct;quizRecord(it.key,ok);if(ok)quizS.correct++;else{quizS.wrong++;quizS.missed.push(it)}render(false)},
+  qNext(){quizS.i++;quizS.picked=null;render(false)},
+  quitQuiz(){quizS.active=false;render(true)},
+  retryMissed(){const items=quizS.missed.slice();Object.assign(quizS,{items:shuffle(items),i:0,revealed:false,picked:null,correct:0,wrong:0,missed:[]});render(true)},
+  resetQuiz(){if(confirm('Reset all quiz statistics? This cannot be undone.')){db.quiz={};save();refresh()}},
+  print:t=>doPrint(t.dataset.r),
+  backup:backupJSON,restore(){pickFile('.json,application/json',restoreJSON)},
+  exportCsv:t=>exportCSV(t.dataset.t),templateCsv:t=>templateCSV(t.dataset.t),
+  importCsv(t){const type=t.dataset.t;pickFile('.csv,text/csv,.txt,text/plain',(txt,fn)=>previewImport(type,txt,fn))},
+  async persist(){try{if(navigator.storage&&navigator.storage.persist){const ok=await navigator.storage.persist();toast(ok?'Browser agreed to keep data persistently':'Browser did not grant persistent storage — keep backing up',!ok);$('#persistInfo').textContent=ok?'Persistent storage: granted':'Persistent storage: not granted'}else toast('Not supported by this browser',true)}catch(e){toast('Not available here',true)}},
+  removeDemo(){if(!confirm('Remove all demonstration records?'))return;const ids=new Set();COLS.forEach(c=>db[c].forEach(x=>{if(x.demo)ids.add(x.id)}));COLS.forEach(c=>{db[c]=db[c].filter(x=>!x.demo)});db.mrs.forEach(r=>r.brandIds=(r.brandIds||[]).filter(i=>!ids.has(i)));db.managers.forEach(g=>g.mrIds=(g.mrIds||[]).filter(i=>!ids.has(i)));Object.keys(db.quiz).forEach(k=>{if(ids.has(k.split(':')[1]))delete db.quiz[k]});if(ids.has(ui.briefMr))ui.briefMr='';ui.medSel.clear();save();toast('Demo data removed');refresh()},
+  loadDemo(){if(COLS.some(c=>db[c].some(x=>x.demo))&&!confirm('Demo data is already present. Add another copy?'))return;const d=blankDB();seedDemo(d);COLS.forEach(c=>db[c].push(...d[c]));save();toast('Demo data loaded');refresh()},
+  eraseAll(){if(!confirm('ERASE ALL MedRecall data in this browser? Download a backup first if you may need it.'))return;if(prompt('Type ERASE to confirm')!=='ERASE'){toast('Cancelled');return}db=blankDB();save();ui.medSel.clear();ui.briefMr='';toast('All data erased');go('dashboard')},
+};
+const CHG={
+  selMed(t){t.checked?ui.medSel.add(t.value):ui.medSel.delete(t.value);const b=$('#cmpBtn');if(b)b.textContent=`Compare (${ui.medSel.size})`},
+  medF(t){ui.medF[t.dataset.k]=t.value;updMeds()},medStar(t){ui.medF.starred=t.checked;updMeds()},
+  hideComp(t){db.settings.hideComp=t.checked;save();updMeds()},
+  coNew(t){const n=t.parentElement.querySelector('[name=newCompany]');n.style.display=t.value==='__new'?'':'none';if(t.value==='__new')n.focus()},
+  formOther(t){const n=t.parentElement.querySelector('[name=formOther]');n.style.display=t.value==='Other'?'':'none'},
+  visitMr(t){const r=byId('mrs',t.value);const f=$('#mform');if(r&&f){f.companyId.value=r.companyId||'';f.division.value=r.division||'';const set=new Set(r.brandIds||[]);const list=f.querySelector('.mslist');Array.from(list.children).sort((a,b)=>set.has(b.querySelector('input')?.value)-set.has(a.querySelector('input')?.value)).forEach(el=>list.appendChild(el))}},
+  giftMr(t){const r=byId('mrs',t.value);const f=$('#mform');if(r&&f&&r.companyId)f.companyId.value=r.companyId},
+  briefMr(t){ui.briefMr=t.value;$('#brief').innerHTML=t.value?mrBrief(t.value):''},
+  visF(t){ui.visF[t.dataset.k]=t.value;$('#visRes').innerHTML=visitList()},
+  giftF(t){ui.giftF[t.dataset.k]=t.value;$('#giftRes').innerHTML=giftResults()},
+  giftBy(t){ui.giftF.by=t.value;$('#giftRes').innerHTML=giftResults()},
+  qScope(t){$('#qValWrap').innerHTML=quizValSel(t.value,'')},
+};
+let tmr=null;const debounce=(fn,ms=120)=>{clearTimeout(tmr);tmr=setTimeout(fn,ms)};
+const INP={
+  medQ(t){ui.medF.q=t.value;debounce(updMeds)},
+  coQ(t){ui.coQ=t.value;debounce(()=>{$('#coRes').innerHTML=coCards(ui.coQ.trim()?searchGen(ui.coQ,db.companies,coHay):db.companies.slice().sort(byName))})},
+  peopleQ(t){ui.peopleQ=t.value;debounce(()=>{$('#pplRes').innerHTML=peopleCards()})},
+  visQ(t){ui.visF.q=t.value;debounce(()=>{$('#visRes').innerHTML=visitList()})},
+  giftQ(t){ui.giftF.q=t.value;debounce(()=>{$('#giftRes').innerHTML=giftResults()})},
+  quickLookup(t){debounce(()=>{$('#quickRes').innerHTML=quickRes(t.value)})},
+  msFilter(t){const q=norm(t.value);t.nextElementSibling.querySelectorAll('.msi').forEach(l=>l.style.display=l.dataset.s.includes(q)?'':'none')},
+  brandDup(){debounce(checkBrandDup,200)},
+};
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[data-act]');if(!t)return;
+  if(t.dataset.act==='noop')return;
+  const f=A[t.dataset.act];if(!f)return;
+  if(t.tagName==='A'||t.tagName==='BUTTON')e.preventDefault();
+  f(t,e);
+});
+document.addEventListener('change',e=>{const t=e.target.closest('[data-chg]');if(t&&CHG[t.dataset.chg])CHG[t.dataset.chg](t,e)});
+document.addEventListener('input',e=>{const t=e.target.closest('[data-inp]');if(t&&INP[t.dataset.inp])INP[t.dataset.inp](t,e)});
+document.addEventListener('submit',e=>{if(e.target.id==='mform'){e.preventDefault();if(modalSubmit){const r=modalSubmit(new FormData(e.target),e.target);if(r!==false)closeModal()}}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#modal').classList.contains('hidden')){if(!$('#mform')||confirm('Close without saving?'))closeModal()}});
+$('#gq').addEventListener('input',e=>{ui.gq=e.target.value;debounce(()=>{if(ui.view!=='search'){if(ui.gq.trim())go('search')}else updSearch()},150)});
+$('#gq').addEventListener('keydown',e=>{if(e.key==='Enter'){ui.gq=e.target.value;if(ui.view!=='search')go('search');else updSearch();e.target.blur()}});
+window.addEventListener('hashchange',route);
+window.addEventListener('afterprint',()=>document.body.classList.remove('printing'));
+window.addEventListener('storage',e=>{if(e.key===KEY&&e.newValue){try{db=normalizeDB(JSON.parse(e.newValue));refresh();toast('Data updated from another tab')}catch(_){}}});
+try{if(!localStorage.getItem(KEY))save()}catch(e){storageOK=false}
+route();
+</script>
+</body>
+</html>
